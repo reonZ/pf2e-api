@@ -1,0 +1,19 @@
+{
+    "name": "pf2e-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch"
+    },
+    "author": "Idle",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "5.3.3"
+    },
+    "dependencies": {
+        "foundry-api": "file:../foundry-api"
+    }
+}
