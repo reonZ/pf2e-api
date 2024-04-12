@@ -1,6 +1,7 @@
 export * from "./application";
 export * from "./classes";
 export * from "./classes";
+export * from "./item";
 export * from "./predicate";
 export * from "./spell";
 export * from "./spell-consumables";

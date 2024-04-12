@@ -143,6 +143,7 @@ declare global {
         get sourceId(): string | null;
         get level(): number;
         get description(): string;
+        get slug(): string;
 
         getRollOptions(prefix?: string, options?: { includeGranter: boolean }): string[];
         isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T];

@@ -98,7 +98,7 @@ declare global {
         familiar: ActorPF2e;
         hazard: ActorPF2e;
         loot: ActorPF2e;
-        party: ActorPF2e;
+        party: PartyPF2e;
         npc: NPCPF2e;
         vehicle: ActorPF2e;
     }
@@ -109,7 +109,6 @@ declare global {
         [k: string]: any;
         pf2e: {
             rollOptions: RollOptionFlags;
-            /** IDs of granted items that are tracked */
             trackedItems: Record<string, string>;
             [key: string]: unknown;
         };
@@ -125,19 +124,27 @@ declare global {
         skills?: Record<string, Statistic<this>>;
         spellcasting: ActorSpellcasting<this> | null;
         synthetics: RuleElementSynthetics;
+        inventory: ActorInventory<this>;
 
         get level(): number;
         get sourceId(): string | null;
         get attributes(): this["system"]["attributes"];
         get itemTypes(): EmbeddedItemInstances<this>;
+        get slug(): string;
 
         getStatistic(slug: string): Statistic<this> | null;
         getRollOptions(domains?: string[]): string[];
+
+        getActiveTokens(linked: boolean | undefined, document: true): TokenDocumentPF2e[];
+        getActiveTokens(linked?: boolean | undefined, document?: false): TokenPF2e[];
+        getActiveTokens(linked?: boolean, document?: boolean): TokenDocumentPF2e[] | TokenPF2e[];
+
         isOfType<T extends "creature" | ActorType>(...types: T[]): this is ActorInstances[T];
         isOfType(...types: string[]): boolean;
+
         createEmbeddedDocuments(
             embeddedName: "Item",
-            data: ItemSourcePF2e[],
+            data: (PreCreate<ItemSourcePF2e> | ItemSourcePF2e)[],
             context?: DocumentModificationContext<this>
         ): Promise<ItemPF2e<this>[]>;
         updateEmbeddedDocuments(
@@ -145,6 +152,7 @@ declare global {
             updateData: EmbeddedDocumentUpdateData<ItemSourcePF2e>[],
             options?: DocumentModificationContext<this>
         ): Promise<ItemPF2e<this>[]>;
+
         deleteEmbeddedDocuments(
             embeddedName: "Item",
             dataId: string[],
@@ -154,10 +162,10 @@ declare global {
 
     type ActorSourcePF2e =
         // | ArmySource
-        CreatureSource;
-    // | HazardSource
-    // | LootSource
-    // | PartySource
+        | CreatureSource
+        // | HazardSource
+        // | LootSource
+        | PartySource;
     // | VehicleSource;
 
     interface ActorPF2e {

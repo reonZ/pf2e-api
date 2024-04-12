@@ -144,9 +144,24 @@ declare global {
         predicate: PredicatePF2e;
     }
 
+    interface ChoiceSetSource extends RuleElementSource {
+        flag?: unknown;
+        prompt?: unknown;
+        selection?: unknown;
+        adjustName?: unknown;
+        recordSlug?: unknown;
+        allowedDrops?: unknown;
+        allowNoSelection?: unknown;
+        rollOption?: unknown;
+    }
+
     class Suboption {}
 
-    abstract class RuleElementPF2e {}
+    abstract class RuleElementPF2e extends FoundryDocument<ItemPF2e> {}
+
+    class ChoiceSetRuleElement extends RuleElementPF2e {}
+
+    class DamageAlterationRuleElement extends RuleElementPF2e {}
 
     class DamageAlteration {}
 }

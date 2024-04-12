@@ -20,24 +20,6 @@ const EFFECT_AREA_SHAPES = [
 
 const MAGIC_TRADITIONS = new Set(["arcane", "divine", "occult", "primal"] as const);
 
-function getSpellcastingEntryMaxSlotRank(entry: SpellcastingEntryPF2e) {
-    let maxSlot = 0;
-
-    if (entry.system.prepared.value === "items") {
-        const levelMaxSlot = Math.ceil(entry.actor.level / 2);
-        if (levelMaxSlot > maxSlot) maxSlot = levelMaxSlot;
-    } else {
-        for (let i = 0; i <= 10; i++) {
-            const slotIndex = `slot${i}` as SlotKey;
-            const slot = entry.system.slots[slotIndex];
-            if (slot.max && i > maxSlot) maxSlot = i;
-        }
-    }
-
-    const actorCharges = Math.ceil(entry.actor.level / 2);
-    return maxSlot > actorCharges ? actorCharges : maxSlot;
-}
-
 type RawStatisticData = Omit<StatisticData, "modifiers"> & {
     modifiers: ModifierObjectParams[];
 };
@@ -72,7 +54,6 @@ function createCounteractStatistic<TActor extends ActorPF2e>(
 ): Statistic<TActor> {
     const actor = ability.actor;
 
-    // NPCs have neither a proficiency bonus nor specified attribute modifier: use their base attack roll modifier
     const baseModifier = actor.isOfType("npc")
         ? ability.statistic.check.modifiers
               .find((m) => m.type === "untyped" && m.slug === "base")
@@ -89,29 +70,58 @@ function createCounteractStatistic<TActor extends ActorPF2e>(
     });
 }
 
+function getHighestSyntheticStatistic(actor: CharacterPF2e, withClassDcs = true) {
+    const synthetics = Array.from(actor.synthetics.statistics.values());
+    const statistics = withClassDcs
+        ? [...synthetics, ...Object.values(actor.classDCs)]
+        : synthetics;
+
+    if (!statistics.length) return;
+
+    const classStatistic = actor.classDC;
+    const groupedStatistics = R.groupBy(statistics, R.prop("mod"));
+    const highestMod = R.pipe(
+        groupedStatistics,
+        R.keys,
+        R.sortBy([R.identity, "desc"]),
+        R.first()
+    ) as unknown as number;
+
+    if (classStatistic && highestMod && classStatistic.mod === highestMod) {
+        return classStatistic;
+    }
+
+    return groupedStatistics[highestMod][0];
+}
+
 function getHighestSpellcastingStatistic(actor: CharacterPF2e) {
     const entries = actor.spellcasting.spellcastingFeatures;
-
     if (!entries.length) return;
 
-    const statistics = entries.map((entry) => ({
-        tradition: entry.tradition!,
+    const classAttribute = actor.classDC?.attribute;
+    const groupedEntries = R.groupBy(entries, (entry) => entry.statistic.mod);
+    const highestMod = R.pipe(
+        groupedEntries,
+        R.keys,
+        R.sortBy([R.identity, "desc"]),
+        R.first()
+    ) as unknown as number;
+    const highestResults = groupedEntries[highestMod].map((entry) => ({
+        tradition: entry.tradition,
         statistic: entry.statistic,
     }));
 
-    const groupedStatistics = R.groupBy(statistics, ({ statistic }) => statistic.mod);
-    const highestMod = R.pipe(groupedStatistics, R.keys, R.sortBy([R.identity, "desc"]), R.first());
-    const highestStatistics = groupedStatistics[highestMod!];
-    const classAttribute = actor.classDC?.attribute;
+    if (highestResults.length === 1 || !classAttribute) {
+        return highestResults[0];
+    }
 
     return (
-        (highestStatistics.length > 1 &&
-            highestStatistics.find(({ statistic }) => statistic.attribute === classAttribute)) ||
-        highestStatistics[0]
+        highestResults.find((entry) => entry.statistic.attribute === classAttribute) ||
+        highestResults[0]
     );
 }
 
-function getMaxRank(actor: CreaturePF2e) {
+function getActorMaxRank(actor: CreaturePF2e) {
     return Math.max(1, Math.ceil(actor.level / 2)) as OneToTen;
 }
 
@@ -164,10 +174,10 @@ export {
     MAGIC_TRADITIONS,
     coerceToSpellGroupId,
     createCounteractStatistic,
+    getActorMaxRank,
     getHighestSpellcastingStatistic,
-    getMaxRank,
+    getHighestSyntheticStatistic,
     getRankLabel,
-    getSpellcastingEntryMaxSlotRank,
     spellSlotGroupIdToNumber,
     upgradeStatisticRank,
     warnInvalidDrop,

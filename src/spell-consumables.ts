@@ -49,11 +49,13 @@ function getIdForSpellConsumable(
 }
 
 function getNameForSpellConsumable(
-    type: SpellConsumableItemType,
+    type: SpellConsumableItemType | string,
     spellName: string,
     heightenedLevel: number
 ): string {
-    const templateId = SPELL_CONSUMABLE_NAME_TEMPLATES[type] || `${type} of {name} (Level {level})`;
+    const templateId =
+        SPELL_CONSUMABLE_NAME_TEMPLATES[type as SpellConsumableItemType] ||
+        `${type} of {name} (Rank {level})`;
     return game.i18n.format(templateId, { name: spellName, level: heightenedLevel });
 }
 
@@ -75,7 +77,7 @@ async function createConsumableFromSpell(
         itemName?: string;
         itemImg?: string;
     }
-): Promise<ConsumableSource> {
+) {
     const pack = game.packs.find((p) => p.collection === "pf2e.equipment-srd");
     const itemId = getIdForSpellConsumable(type, heightenedLevel);
     const consumable = await pack?.getDocument(itemId ?? "");
@@ -99,8 +101,11 @@ async function createConsumableFromSpell(
 
     traits.value.sort();
 
-    consumableSource.name =
-        itemName ?? getNameForSpellConsumable(type, spell.name, heightenedLevel);
+    consumableSource.name = getNameForSpellConsumable(
+        itemName ?? type,
+        spell.name,
+        heightenedLevel
+    );
     const description = consumableSource.system.description.value;
 
     consumableSource.system.description.value = (() => {
@@ -138,7 +143,7 @@ async function createConsumableFromSpell(
         consumableSource.system.temporary = true;
     }
 
-    return consumableSource;
+    return consumableSource as unknown as PreCreate<ConsumableSource>;
 }
 
 export { createConsumableFromSpell };

@@ -137,7 +137,9 @@ declare global {
         // speeds: SpeedSheetData[];
     }
 
-    class ActorSheetPF2e<TActor extends ActorPF2e = ActorPF2e> extends ActorSheet<TActor> {}
+    class ActorSheetPF2e<TActor extends ActorPF2e = ActorPF2e> extends ActorSheet<TActor> {
+        _updateObject(event: SubmitEvent, formData: Record<string, unknown>): Promise<void>;
+    }
 
     class CreatureSheetPF2e<
         TActor extends CreaturePF2e = CreaturePF2e

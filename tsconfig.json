@@ -8,6 +8,7 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "noImplicitAny": true,
+        "noImplicitThis": true,
         "noFallthroughCasesInSwitch": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,

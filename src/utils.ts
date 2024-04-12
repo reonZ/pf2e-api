@@ -44,12 +44,55 @@ function localizer(prefix: string): (...args: Parameters<Localization["format"]>
             : game.i18n.localize(`${prefix}.${suffix}`);
 }
 
+function traitSlugToObject(
+    trait: string,
+    dictionary: Record<string, string | undefined>
+): TraitViewData {
+    const traitObject: TraitViewData = {
+        name: trait,
+        label: game.i18n.localize(dictionary[trait] ?? trait),
+        description: null,
+    };
+    if (objectHasKey(CONFIG.PF2E.traitsDescriptions, trait)) {
+        traitObject.description = CONFIG.PF2E.traitsDescriptions[trait];
+    }
+
+    return traitObject;
+}
+
+const actionGlyphMap: Record<string, string> = {
+    0: "F",
+    free: "F",
+    1: "1",
+    2: "2",
+    3: "3",
+    "1 or 2": "1/2",
+    "1 to 3": "1 - 3",
+    "2 or 3": "2/3",
+    "2 rounds": "3,3",
+    reaction: "R",
+};
+
+function getActionGlyph(action: string | number | null | ActionCost): string {
+    if (!action && action !== 0) return "";
+
+    const value =
+        typeof action !== "object" ? action : action.type === "action" ? action.value : action.type;
+    const sanitized = String(value ?? "")
+        .toLowerCase()
+        .trim();
+
+    return actionGlyphMap[sanitized]?.replace("-", "–") ?? "";
+}
+
 export {
     ErrorPF2e,
+    getActionGlyph,
     htmlClosest,
     localizer,
     objectHasKey,
-    tupleHasValue,
-    setHasElement,
     ordinalString,
+    setHasElement,
+    traitSlugToObject,
+    tupleHasValue,
 };

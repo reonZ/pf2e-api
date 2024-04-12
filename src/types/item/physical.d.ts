@@ -13,7 +13,7 @@ declare global {
         // | ArmorSource
         | BookSource
         | ConsumableSource
-        // | ContainerSource
+        | ContainerSource
         | EquipmentSource
         // | ShieldSource
         // | TreasureSource
@@ -228,8 +228,19 @@ declare global {
     }
 
     class PhysicalItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {
-        get isInvested(): boolean | null;
         get quantity(): number;
+        get carryType(): ItemCarryType;
+        get isInvested(): boolean | null;
+        get isEquipped(): boolean;
+        get isStowed(): boolean;
+        get container(): ContainerPF2e<ActorPF2e> | null;
+        get isHeld(): boolean;
+        get assetValue(): CoinsPF2e;
+        get identificationStatus(): IdentificationStatus;
+        get isIdentified(): boolean;
+        get isAlchemical(): boolean;
+        get isMagical(): boolean;
+        get isCursed(): boolean;
     }
 
     interface PhysicalItemPF2e {

@@ -1,5 +1,15 @@
 declare global {
-    type FeatCategory = FeatOrFeatureCategory;
+    type FeatCategory =
+        | "curse"
+        | "class"
+        | "general"
+        | "skill"
+        | "ancestry"
+        | "bonus"
+        | "ancestryfeature"
+        | "classfeature"
+        | "deityboon"
+        | "pfsboon";
 
     type FeatOrFeatureCategory =
         | "curse"
@@ -71,11 +81,14 @@ declare global {
         selfEffect: SelfEffectReference | null;
     }
 
+    type FeatTrait = string;
+
     type FeatSource = BaseItemSourcePF2e<"feat", FeatSystemSource>;
 
     class FeatPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {
         get rarity(): Rarity;
         get category(): FeatOrFeatureCategory;
+        get traits(): Set<FeatTrait>;
     }
 
     interface FeatPF2e {

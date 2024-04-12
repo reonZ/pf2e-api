@@ -10,6 +10,13 @@ declare global {
             languages: Record<string, string>;
             preparationType: Record<string, string>;
             actorSizes: Record<Size, string>;
+            traitsDescriptions: Record<string, string>;
+            actionTraits: Record<string, string>;
+            proficiencyLevels: Record<OneToFour, string>;
+            weaponTraits: Record<string, string>;
+            weaponGroups: Record<WeaponGroup, string>;
+            damageTypes: Record<DamageType, string>;
+            preciousMaterials: Record<PreciousMaterialType, string>;
             frequencies: {
                 turn: "PF2E.Duration.turn";
                 round: "PF2E.Duration.round";

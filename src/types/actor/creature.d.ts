@@ -170,17 +170,30 @@ declare global {
         TSystemSource extends CreatureSystemSource
     > = BaseActorSourcePF2e<TType, TSystemSource>;
 
+    interface ChangeCarryTypeOptions {
+        carryType: ItemCarryType;
+        handsHeld?: ZeroToTwo;
+        inSlot?: boolean;
+    }
+
     abstract class CreaturePF2e extends ActorPF2e {
         skills: Record<SkillLongForm, Statistic<this>> & Record<string, Statistic<this>>;
         synthetics: RuleElementSynthetics<CreaturePF2e>;
         spellcasting: ActorSpellcasting<this>;
+        parties: Set<PartyPF2e>;
+
+        get traits(): Set<CreatureTrait>;
+        get hitPoints(): HitPointsSummary;
+
+        changeCarryType(
+            item: PhysicalItemPF2e<CreaturePF2e>,
+            options: ChangeCarryTypeOptions
+        ): Promise<void>;
     }
 
     interface CreaturePF2e {
         readonly _source: CreatureSource;
         system: CreatureSystemData;
-        get traits(): Set<CreatureTrait>;
-        get hitPoints(): HitPointsSummary;
     }
 }
 
