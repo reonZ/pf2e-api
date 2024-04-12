@@ -14,6 +14,6 @@
         "typescript": "5.3.3"
     },
     "dependencies": {
-        "foundry-api": "file:../foundry-api"
+        "foundry-api": "github:reonZ/foundry-api"
     }
 }
