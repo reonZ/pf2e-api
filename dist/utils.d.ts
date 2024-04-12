@@ -1,0 +1,12 @@
+declare function ErrorPF2e(message: string): Error;
+declare function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O;
+declare function tupleHasValue<const A extends readonly unknown[]>(array: A, value: unknown): value is A[number];
+declare function setHasElement<T extends Set<unknown>>(set: T, value: unknown): value is SetElement<T>;
+declare function ordinalString(value: number): string;
+declare function htmlClosest<K extends keyof HTMLElementTagNameMap>(parent: MaybeHTML, selectors: K): HTMLElementTagNameMap[K] | null;
+declare function htmlClosest(child: MaybeHTML, selectors: string): HTMLElement | null;
+declare function htmlClosest<E extends HTMLElement = HTMLElement>(parent: MaybeHTML, selectors: string): E | null;
+declare function localizer(prefix: string): (...args: Parameters<Localization["format"]>) => string;
+declare function traitSlugToObject(trait: string, dictionary: Record<string, string | undefined>): TraitViewData;
+declare function getActionGlyph(action: string | number | null | ActionCost): string;
+export { ErrorPF2e, getActionGlyph, htmlClosest, localizer, objectHasKey, ordinalString, setHasElement, traitSlugToObject, tupleHasValue, };
