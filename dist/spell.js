@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.warnInvalidDrop = exports.upgradeStatisticRank = exports.spellSlotGroupIdToNumber = exports.getRankLabel = exports.getHighestSyntheticStatistic = exports.getHighestSpellcastingStatistic = exports.getActorMaxRank = exports.createCounteractStatistic = exports.coerceToSpellGroupId = exports.MAGIC_TRADITIONS = exports.EFFECT_AREA_SHAPES = void 0;
+exports.warnInvalidDrop = exports.upgradeStatisticRank = exports.spellSlotGroupIdToNumber = exports.getSummarizedSpellsDataForRender = exports.getRankLabel = exports.getHighestSyntheticStatistic = exports.getHighestSpellcastingStatistic = exports.getActorMaxRank = exports.createCounteractStatistic = exports.coerceToSpellGroupId = exports.MAGIC_TRADITIONS = exports.EFFECT_AREA_SHAPES = void 0;
 const foundry_api_1 = require("foundry-api");
 const _1 = require(".");
 const EFFECT_AREA_SHAPES = [
@@ -130,3 +130,150 @@ function warnInvalidDrop(warning, { spell, groupId }) {
     }
 }
 exports.warnInvalidDrop = warnInvalidDrop;
+async function getSummarizedSpellsDataForRender(actor, sortByType, localize, entries) {
+    entries ??= await Promise.all(actor.spellcasting.collections.map((spells) => spells.entry.getSheetData({ spells })));
+    const focusPool = actor.system.resources?.focus ?? { value: 0, max: 0 };
+    const pf2eDailies = (0, foundry_api_1.getActiveModule)("pf2e-dailies");
+    const spells = [];
+    const labels = [];
+    let hasFocusCantrip = false;
+    for (const entry of entries) {
+        const entryId = entry.id;
+        const isFocus = entry.isFocusPool;
+        const isRitual = entry.isRitual;
+        const isCharges = entry.category === "charges";
+        const isStaff = entry.isStaff;
+        const isInnate = entry.isInnate;
+        const isPrepared = entry.isPrepared;
+        const isSpontaneous = entry.isSpontaneous;
+        const isFlexible = entry.isFlexible;
+        const consumable = entry.category === "items"
+            ? actor.items.get(entryId.split("-")[0])
+            : undefined;
+        for (const group of entry.groups) {
+            if (!group.active.length || group.uses?.max === 0)
+                continue;
+            const groupNumber = spellSlotGroupIdToNumber(group.id);
+            const slotSpells = [];
+            const isCantrip = group.id === "cantrips";
+            const isBroken = !isCantrip && isCharges && !pf2eDailies?.active;
+            const groupUses = typeof group.uses?.value === "number" ? group.uses : undefined;
+            for (let slotId = 0; slotId < group.active.length; slotId++) {
+                const active = group.active[slotId];
+                if (!active?.spell || active.uses?.max === 0)
+                    continue;
+                const { spell } = active;
+                const spellId = spell.id;
+                const uses = isCantrip || isFocus || consumable || (isPrepared && !isFlexible)
+                    ? undefined
+                    : isCharges && !isBroken
+                        ? entry.uses
+                        : active.uses ?? groupUses;
+                slotSpells.push({
+                    name: spell.name,
+                    itemId: spellId,
+                    entryId,
+                    groupId: group.id,
+                    slotId,
+                    action: spell.system.time.value,
+                    castRank: active.castRank ?? spell.rank,
+                    expended: isFocus ? !isCantrip && focusPool.value <= 0 : active.expended,
+                    img: spell.img,
+                    range: spell.system.range.value || "-&nbsp;",
+                    rank: spell.rank,
+                    entryName: entry.name,
+                    consumable,
+                    isBroken,
+                    isFocus,
+                    isRitual,
+                    isCharges,
+                    isStaff,
+                    isInnate,
+                    isPrepared,
+                    isSpontaneous,
+                    isFlexible,
+                    uses: uses
+                        ? {
+                            ...uses,
+                            input: isStaff
+                                ? ""
+                                : isCharges
+                                    ? "system.slots.slot1.value"
+                                    : isInnate
+                                        ? "system.location.uses.value"
+                                        : `system.slots.slot${groupNumber}.value`,
+                            itemId: isStaff ? "" : isInnate ? spellId : entryId,
+                        }
+                        : undefined,
+                    order: isCharges
+                        ? 0
+                        : isPrepared
+                            ? 1
+                            : isFocus
+                                ? 2
+                                : isInnate
+                                    ? 3
+                                    : isSpontaneous
+                                        ? 4
+                                        : 5,
+                    category: consumable
+                        ? `PF2E.Item.Consumable.Category.${consumable.category}`
+                        : isStaff
+                            ? localize("staff")
+                            : isCharges
+                                ? localize("charges")
+                                : isInnate
+                                    ? "PF2E.PreparationTypeInnate"
+                                    : isSpontaneous
+                                        ? "PF2E.PreparationTypeSpontaneous"
+                                        : isFlexible
+                                            ? "PF2E.SpellFlexibleLabel"
+                                            : isFocus
+                                                ? "PF2E.TraitFocus"
+                                                : "PF2E.SpellPreparedLabel",
+                });
+            }
+            if (slotSpells.length) {
+                if (isFocus) {
+                    if (isCantrip) {
+                        hasFocusCantrip = true;
+                    }
+                    else {
+                        spells[12] ??= [];
+                        spells[12].push(...slotSpells);
+                        continue;
+                    }
+                }
+                else if (isRitual) {
+                    spells[13] ??= [];
+                    spells[13].push(...slotSpells);
+                    continue;
+                }
+                labels[groupNumber] ??= group.label;
+                spells[groupNumber] ??= [];
+                spells[groupNumber].push(...slotSpells);
+            }
+        }
+    }
+    if (spells.length) {
+        const orderSort = (a, b) => a.order === b.order ? (0, foundry_api_1.localeCompare)(a.name, b.name) : a.order - b.order;
+        const nameSort = (a, b) => (0, foundry_api_1.localeCompare)(a.name, b.name);
+        const sort = sortByType ? orderSort : nameSort;
+        for (let i = 0; i < spells.length; i++) {
+            const entry = spells[i];
+            if (!entry || i > 11)
+                continue;
+            entry.sort(sort);
+        }
+    }
+    labels[12] = "PF2E.Focus.Spells";
+    labels[13] = "PF2E.Actor.Character.Spellcasting.Tab.Rituals";
+    return {
+        labels,
+        spells,
+        focusPool,
+        isOwner: actor.isOwner,
+        hasFocusCantrip,
+    };
+}
+exports.getSummarizedSpellsDataForRender = getSummarizedSpellsDataForRender;

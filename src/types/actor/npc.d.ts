@@ -148,7 +148,9 @@ declare global {
         resources: CreatureResourcesSource;
     }
 
-    class NPCPF2e extends CreaturePF2e {}
+    class NPCPF2e extends CreaturePF2e {
+        get abilities(): Abilities;
+    }
 
     interface NPCPF2e {
         flags: NPCFlags;

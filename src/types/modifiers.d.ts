@@ -45,11 +45,16 @@ declare global {
         alterations?: DamageAlteration[];
     }
 
-    class StatisticModifier {}
+    class StatisticModifier {
+        constructor(slug: string, modifiers?: ModifierPF2e[], rollOptions?: string[] | Set<string>);
+    }
 
     class ModifierPF2e {
         constructor(args: ModifierObjectParams);
 
+        kind: "bonus" | "penalty" | "modifier";
+
+        test(options: string[] | Set<string>): void;
         toObject: () => ModifierObjectParams;
         clone(
             data?: Partial<ModifierObjectParams>,
@@ -59,7 +64,30 @@ declare global {
 
     interface ModifierPF2e extends RawModifier {}
 
-    class DamageDicePF2e {}
+    interface DamageDiceOverride {
+        upgrade?: boolean;
+        downgrade?: boolean;
+        dieSize?: DamageDieSize;
+        damageType?: DamageType;
+        diceNumber?: number;
+    }
+
+    class DamageDicePF2e {
+        selector: string;
+        slug: string;
+        label: string;
+        diceNumber: number;
+        dieSize: DamageDieSize | null;
+        critical: boolean | null;
+        category: "persistent" | "precision" | "splash" | null;
+        damageType: DamageType | null;
+        override: DamageDiceOverride | null;
+        ignored: boolean;
+        enabled: boolean;
+        predicate: Predicate;
+        alterations: DamageAlteration[];
+        hideIfDisabled: boolean;
+    }
 }
 
 export type {};

@@ -89,6 +89,8 @@ declare global {
         get rarity(): Rarity;
         get category(): FeatOrFeatureCategory;
         get traits(): Set<FeatTrait>;
+        get frequency(): Frequency | null;
+        get actionCost(): ActionCost | null;
     }
 
     interface FeatPF2e {

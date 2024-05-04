@@ -1,3 +1,5 @@
+import { RollNotePF2e } from "../notes";
+
 declare global {
     interface BaseStatisticTraceData {
         slug: string;
@@ -97,6 +99,45 @@ declare global {
         domains: string[];
         mod: number;
         modifiers: ModifierPF2e[];
+
+        roll(args?: StatisticRollParameters): Promise<Rolled<CheckRoll> | null>;
+    }
+
+    interface CheckDCReference {
+        slug: string;
+        value?: never;
+    }
+
+    type CheckRollCallback = (
+        roll: Rolled<CheckRoll>,
+        outcome: DegreeOfSuccessString | null | undefined,
+        message: ChatMessagePF2e,
+        event: Event | null
+    ) => Promise<void> | void;
+
+    interface StatisticRollParameters {
+        identifier?: string;
+        action?: string;
+        token?: Maybe<TokenDocumentPF2e>;
+        attackNumber?: number;
+        target?: Maybe<ActorPF2e>;
+        origin?: Maybe<ActorPF2e>;
+        dc?: CheckDC | CheckDCReference | number | null;
+        label?: string;
+        slug?: Maybe<string>;
+        title?: string;
+        extraRollNotes?: (RollNotePF2e | RollNoteSource)[];
+        extraRollOptions?: string[];
+        modifiers?: ModifierPF2e[];
+        item?: ItemPF2e<ActorPF2e> | null;
+        rollMode?: RollMode | "roll";
+        skipDialog?: boolean;
+        rollTwice?: RollTwiceOption;
+        traits?: (TraitViewData | string)[];
+        damaging?: boolean;
+        melee?: boolean;
+        createMessage?: boolean;
+        callback?: CheckRollCallback;
     }
 
     abstract class BaseStatistic<TActor extends ActorPF2e> {
@@ -121,6 +162,14 @@ declare global {
 
         getChatData(options?: RollOptionConfig): StatisticChatData;
         withRollOptions(options?: RollOptionConfig): Statistic;
+
+        getTraceData(
+            this: Statistic<CreaturePF2e>,
+            options?: { value?: "dc" | "mod" }
+        ): StatisticTraceData<AttributeString>;
+        getTraceData(options?: { value?: "dc" | "mod" }): StatisticTraceData;
+
+        roll(args?: StatisticRollParameters): Promise<Rolled<CheckRoll> | null>;
     }
 
     class StatisticDifficultyClass<TParent extends Statistic = Statistic> {
@@ -129,6 +178,8 @@ declare global {
         label?: string;
         modifiers: ModifierPF2e[];
         options: Set<string>;
+
+        get value(): number;
     }
 }
 

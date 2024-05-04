@@ -1,16 +1,13 @@
+import { saveTypes } from "../../data";
+import { ATTRIBUTE_ABBREVIATIONS } from "../../skills";
+
 declare global {
     interface TraitViewData {
-        /** The name of this action. */
         name: string;
-        /** The label for this action which will be rendered on the UI. */
         label: string;
-        /** The roll this trait applies to, if relevant. */
         rollName?: string;
-        /** The option that this trait applies to the roll (of type `rollName`). */
         rollOption?: string;
-        /** An extra css class added to the UI marker for this trait. */
         cssClass?: string;
-        /** The description of the trait */
         description: string | null;
     }
 
@@ -21,41 +18,22 @@ declare global {
     interface StrikeData extends StatisticModifier {
         slug: string;
         label: string;
-        /** The type of action; currently just 'strike'. */
         type: "strike";
-        /** The glyph for this strike (how many actions it takes, reaction, etc). */
         glyph: string;
-        /** A description of this strike. */
         description: string;
-        /** A description of what happens on a critical success. */
         criticalSuccess: string;
-        /** A description of what happens on a success. */
         success: string;
-        /** Action traits associated with this strike */
         traits: TraitViewData[];
-        /** Any options always applied to this strike */
         options: string[];
-        /**
-         * Whether the strike and its auxiliary actions are available (usually when the weapon corresponding with the
-         * strike is equipped)
-         */
         ready: boolean;
-        /** Whether striking itself, independent of the auxiliary actions, is possible */
         canStrike: boolean;
         /** Alias for `attack`. */
         roll?: RollFunction<AttackRollParams>;
-        /** Roll to attack with the given strike (with no MAP; see `variants` for MAPs.) */
         attack?: RollFunction<AttackRollParams>;
-        /** Roll normal (non-critical) damage for this weapon. */
         damage?: DamageRollFunction;
-        /** Roll critical damage for this weapon. */
         critical?: DamageRollFunction;
-        /** Alternative usages of a strike weapon: thrown, combination-melee, etc. */
         altUsages?: StrikeData[];
-        /** A list of attack variants which apply the Multiple Attack Penalty. */
         variants: { label: string; roll: RollFunction<AttackRollParams> }[];
-
-        /** Ammunition choices and selected ammo if this is a ammo consuming weapon. */
         ammunition?: {
             compatible: (ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>)[];
             incompatible: (ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>)[];
@@ -64,8 +42,6 @@ declare global {
                 compatible: boolean;
             } | null;
         };
-
-        /** The weapon or melee item--possibly ephemeral--being used for the strike */
         item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>;
     }
 
@@ -116,7 +92,7 @@ declare global {
     type AuxiliaryActionType = AuxiliaryActionParams["action"];
     type AuxiliaryActionPurpose = AuxiliaryActionParams["annotation"];
 
-    type AttributeString = "str" | "dex" | "con" | "int" | "wis" | "cha";
+    type AttributeString = SetElement<typeof ATTRIBUTE_ABBREVIATIONS>;
 
     type Size = "tiny" | "sm" | "med" | "lg" | "huge" | "grg";
 
@@ -162,7 +138,7 @@ declare global {
 
     type Rarity = "common" | "uncommon" | "rare" | "unique";
     type ActionType = "action" | "reaction" | "free" | "passive";
-    type SaveType = "fortitude" | "reflex" | "will";
+    type SaveType = (typeof saveTypes)[number];
 
     type ZeroToTwo = 0 | 1 | 2;
     type ZeroToThree = ZeroToTwo | 3; // +1!

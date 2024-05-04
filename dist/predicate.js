@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PredicatePF2e = void 0;
 const foundry_api_1 = require("foundry-api");
 class PredicatePF2e extends Array {
     /** Is the predicate data structurally valid? */
@@ -103,7 +102,6 @@ class PredicatePF2e extends Array {
                     statement.iff.every((s) => !this.#isTrue(s, domain)))));
     }
 }
-exports.PredicatePF2e = PredicatePF2e;
 class StatementValidator {
     static isStatement(statement) {
         return foundry_api_1.R.isPlainObject(statement)

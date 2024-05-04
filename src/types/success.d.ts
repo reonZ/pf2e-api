@@ -1,7 +1,9 @@
-import { PredicatePF2e } from "..";
+import { DEGREE_OF_SUCCESS_STRINGS } from "../success";
 
 declare global {
-    type DegreeOfSuccessString = "criticalFailure" | "failure" | "success" | "criticalSuccess";
+    type DegreeOfSuccessString = (typeof DEGREE_OF_SUCCESS_STRINGS)[number];
+
+    type DegreeOfSuccessIndex = ZeroToThree;
 
     type DegreeAdjustmentAmount =
         | 1
@@ -24,7 +26,7 @@ declare global {
 
     interface DegreeOfSuccessAdjustment {
         adjustments: DegreeAdjustmentsRecord;
-        predicate?: PredicatePF2e;
+        predicate?: Predicate;
     }
 
     type DegreeAdjustmentsRecord = {

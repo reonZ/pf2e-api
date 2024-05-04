@@ -20,4 +20,48 @@ declare function coerceToSpellGroupId(value: unknown): SpellSlotGroupId | null;
 declare function spellSlotGroupIdToNumber(groupId: SpellSlotGroupId): ZeroToTen;
 declare function spellSlotGroupIdToNumber(groupId: Maybe<string | number>): ZeroToTen | null;
 declare function warnInvalidDrop(warning: DropWarningType, { spell, groupId }: WarnInvalidDropParams): void;
-export { EFFECT_AREA_SHAPES, MAGIC_TRADITIONS, coerceToSpellGroupId, createCounteractStatistic, getActorMaxRank, getHighestSpellcastingStatistic, getHighestSyntheticStatistic, getRankLabel, spellSlotGroupIdToNumber, upgradeStatisticRank, warnInvalidDrop, };
+declare function getSummarizedSpellsDataForRender(actor: CreaturePF2e, sortByType: boolean, localize: (str: string) => string, entries?: SpellcastingSheetData[]): Promise<{
+    labels: string[];
+    spells: SummarizedSpellData[][];
+    focusPool: {
+        value: number;
+        max: number;
+        cap: number;
+    } | {
+        value: number;
+        max: number;
+    };
+    isOwner: boolean;
+    hasFocusCantrip: boolean;
+}>;
+type SummarizedSpellData = {
+    itemId: string;
+    entryId: string;
+    groupId: SpellSlotGroupId;
+    castRank: number;
+    slotId: number | undefined;
+    expended: boolean | undefined;
+    name: string;
+    action: string;
+    img: string;
+    order: number;
+    entryName: string;
+    category: string;
+    isBroken: boolean;
+    isFocus: boolean | undefined;
+    isRitual: boolean | undefined;
+    isCharges: boolean;
+    isStaff: boolean | undefined;
+    isInnate: boolean | undefined;
+    isPrepared: boolean | undefined;
+    isSpontaneous: boolean | undefined;
+    isFlexible: boolean | undefined;
+    consumable: ConsumablePF2e<CharacterPF2e> | undefined;
+    range: string;
+    rank: ZeroToTen;
+    uses: (ValueAndMax & {
+        input: string;
+        itemId: string;
+    }) | undefined;
+};
+export { EFFECT_AREA_SHAPES, MAGIC_TRADITIONS, coerceToSpellGroupId, createCounteractStatistic, getActorMaxRank, getHighestSpellcastingStatistic, getHighestSyntheticStatistic, getRankLabel, getSummarizedSpellsDataForRender, spellSlotGroupIdToNumber, upgradeStatisticRank, warnInvalidDrop, };

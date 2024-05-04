@@ -1,5 +1,3 @@
-import { PredicatePF2e } from "../..";
-
 declare global {
     type CharacterSkill<TActor extends CharacterPF2e> = Statistic<TActor> & { rank: ZeroToFour };
 
@@ -222,7 +220,7 @@ declare global {
 
     interface MartialProficiency extends CharacterProficiency {
         label: string;
-        definition?: PredicatePF2e;
+        definition?: Predicate;
         sameAs?: WeaponCategory | ArmorCategory;
         maxRank?: Exclude<ProficiencyRank, "untrained">;
         custom?: boolean;
@@ -320,12 +318,40 @@ declare global {
         glyph: string | null;
     }
 
+    interface PreparedCraftingFormula extends CraftingFormula {
+        quantity: number;
+        expended: boolean;
+        isSignatureItem: boolean;
+        sort: number;
+    }
+
+    interface CraftingEntry extends CraftingEntryData {
+        preparedCraftingFormulas: PreparedCraftingFormula[];
+
+        get reagentCost(): number;
+    }
+
+    interface CraftingFormula extends CraftingFormulaData {
+        item: PhysicalItemPF2e;
+    }
+
     class CharacterPF2e extends CreaturePF2e {
+        ancestry: AncestryPF2e<this> | null;
+        // heritage: HeritagePF2e<this> | null;
+        // background: BackgroundPF2e<this> | null;
+        class: ClassPF2e<this> | null;
+        // deity: DeityPF2e<this> | null;
+
         familiar: FamiliarPF2e | null;
         skills: CharacterSkills<this>;
         classDC: Statistic<CharacterPF2e> | null;
         classDCs: Record<string, Statistic<CharacterPF2e>>;
         synthetics: RuleElementSynthetics<CharacterPF2e>;
+
+        get heroPoints(): ValueAndMax;
+        get abilities(): CharacterAbilities;
+
+        getCraftingEntries(formulas?: CraftingFormula[]): Promise<CraftingEntry[]>;
     }
 
     interface CharacterPF2e {

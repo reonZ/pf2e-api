@@ -10,13 +10,13 @@ declare global {
         | "weapon";
 
     type PhysicalItemSource =
-        // | ArmorSource
+        | ArmorSource
         | BookSource
         | ConsumableSource
         | ContainerSource
         | EquipmentSource
-        // | ShieldSource
-        // | TreasureSource
+        | ShieldSource
+        | TreasureSource
         | WeaponSource;
 
     type PhysicalItemTrait = string;
@@ -109,11 +109,6 @@ declare global {
         activations?: Record<string, ItemActivation>;
         temporary?: boolean;
         subitems?: PhysicalItemSource[];
-
-        /**
-         * Data for apex items: the attribute upgraded and, in case of multiple apex items, whether the upgrade has been
-         * selected
-         */
         apex?: {
             attribute: AttributeString;
             selected?: boolean;
@@ -241,6 +236,15 @@ declare global {
         get isAlchemical(): boolean;
         get isMagical(): boolean;
         get isCursed(): boolean;
+        get price(): Price;
+        get traits(): Set<PhysicalItemTrait>;
+        get isInContainer(): boolean;
+        get isDamaged(): boolean;
+        get isBroken(): boolean;
+        get isDestroyed(): boolean;
+        get hardness(): number;
+        get level(): number;
+        get rarity(): Rarity;
     }
 
     interface PhysicalItemPF2e {

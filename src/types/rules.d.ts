@@ -1,4 +1,4 @@
-import { PredicatePF2e } from "..";
+import { RollNotePF2e } from "../notes";
 
 declare global {
     type AELikeChangeMode =
@@ -59,17 +59,17 @@ declare global {
     interface MAPSynthetic {
         label: string;
         penalty: number;
-        predicate: PredicatePF2e;
+        predicate: Predicate;
     }
 
     interface RollTwiceSynthetic {
         keep: "higher" | "lower";
-        predicate?: PredicatePF2e;
+        predicate?: Predicate;
     }
 
     interface SenseSynthetic {
         sense: Required<SenseData>;
-        predicate: PredicatePF2e;
+        predicate: Predicate;
         force: boolean;
     }
 
@@ -125,7 +125,7 @@ declare global {
         label: string;
         bonus: number;
         type: "item" | "potency";
-        predicate: PredicatePF2e;
+        predicate: Predicate;
         property?: WeaponPropertyRuneType[];
     }
 
@@ -141,7 +141,7 @@ declare global {
     interface StrikingSynthetic {
         label: string;
         bonus: number;
-        predicate: PredicatePF2e;
+        predicate: Predicate;
     }
 
     interface ChoiceSetSource extends RuleElementSource {
@@ -155,15 +155,36 @@ declare global {
         rollOption?: unknown;
     }
 
+    interface RuleElementOptions extends ParentedDataModelConstructionOptions<ItemPF2e<ActorPF2e>> {
+        sourceIndex?: number;
+        suppressWarnings?: boolean;
+    }
+
+    type RuleElementConstructor = new (
+        data: RuleElementSource,
+        options: RuleElementOptions
+    ) => RuleElementPF2e;
+
     class Suboption {}
 
-    abstract class RuleElementPF2e extends FoundryDocument<ItemPF2e> {}
+    abstract class RuleElementPF2e extends FoundryDocument<ItemPF2e> {
+        get item(): this["parent"];
+
+        onUpdateEncounter?(data: {
+            event: "initiative-roll" | "turn-start";
+            actorUpdates: Record<string, unknown>;
+        }): Promise<void>;
+    }
 
     class ChoiceSetRuleElement extends RuleElementPF2e {}
 
     class DamageAlterationRuleElement extends RuleElementPF2e {}
 
     class DamageAlteration {}
+
+    class RuleElements {
+        static readonly builtin: Record<string, RuleElementConstructor | undefined>;
+    }
 }
 
 export type {};

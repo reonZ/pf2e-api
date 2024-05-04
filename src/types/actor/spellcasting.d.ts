@@ -76,6 +76,7 @@ declare global {
         expended?: boolean;
         signature?: boolean;
         virtual?: boolean;
+        uses?: ValueAndMax;
     }
 
     interface SpellcastingSlotGroup {
@@ -97,7 +98,7 @@ declare global {
 
     interface SpellCollectionData {
         groups: SpellcastingSlotGroup[];
-        flexibleAvailable?: { value: number; max: number } | null;
+        flexibleAvailable?: ValueAndMax | null;
         prepList: Record<ZeroToTen, SpellPrepEntry[]> | null;
     }
 
@@ -125,9 +126,11 @@ declare global {
         isInnate?: boolean;
         isPrepared?: boolean;
         isRitual?: boolean;
+        isStaff?: boolean;
         isSpontaneous?: boolean;
         usesSpellProficiency: boolean;
         showSlotlessLevels?: boolean;
+        uses?: ValueAndMax;
     }
 
     interface CastOptions {

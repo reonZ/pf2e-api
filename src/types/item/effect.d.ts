@@ -123,6 +123,43 @@ declare global {
         } | null;
         roll: Pick<CheckRoll, "total" | "degreeOfSuccess"> | null;
     }
+
+    interface AbstractEffectSystemData extends ItemSystemData {
+        traits: EffectTraits;
+        fromSpell: boolean;
+    }
+
+    interface EffectSystemData
+        extends Omit<EffectSystemSource, "description" | "fromSpell">,
+            Omit<AbstractEffectSystemData, "level"> {
+        expired: boolean;
+        badge: EffectBadge | null;
+        remaining: string;
+    }
+
+    abstract class AbstractEffectPF2e<
+        TParent extends ActorPF2e = ActorPF2e
+    > extends ItemPF2e<TParent> {
+        get origin(): ActorPF2e | null;
+    }
+
+    interface AbstractEffectPF2e {
+        readonly _source: AfflictionSource | ConditionSource | EffectSource;
+        system: AfflictionSystemData | ConditionSystemData | EffectSystemData;
+    }
+
+    class EffectPF2e<TParent extends ActorPF2e = ActorPF2e> extends AbstractEffectPF2e<TParent> {
+        get isLocked(): boolean;
+        get badge(): EffectBadge | null;
+
+        onEncounterEvent(event: BadgeReevaluationEventType): Promise<void>;
+    }
+
+    interface EffectPF2e {
+        flags: EffectFlags;
+        readonly _source: EffectSource;
+        system: EffectSystemData;
+    }
 }
 
 export type {};

@@ -1,3 +1,5 @@
+import { RollNotePF2e } from "../../notes";
+
 declare global {
     type BaseActorSourcePF2e<
         TType extends ActorType,
@@ -95,9 +97,9 @@ declare global {
         army: ActorPF2e;
         character: CharacterPF2e;
         creature: CreaturePF2e;
-        familiar: ActorPF2e;
+        familiar: FamiliarPF2e;
         hazard: ActorPF2e;
-        loot: ActorPF2e;
+        loot: LootPF2e;
         party: PartyPF2e;
         npc: NPCPF2e;
         vehicle: ActorPF2e;
@@ -119,19 +121,50 @@ declare global {
         duration: PreparedEffectDurationData;
     }
 
+    interface ApplyDamageParams {
+        damage: number | Rolled<DamageRoll>;
+        token: TokenDocumentPF2e;
+        item?: ItemPF2e<ActorPF2e> | null;
+        skipIWR?: boolean;
+        rollOptions?: Set<string>;
+        shieldBlockRequest?: boolean;
+        breakdown?: string[];
+        outcome?: DegreeOfSuccessString | null;
+        notes?: RollNotePF2e[];
+        final?: boolean;
+    }
+
     class ActorPF2e extends Actor {
         type: ActorType;
         skills?: Record<string, Statistic<this>>;
+        saves?: { [K in SaveType]?: Statistic };
         spellcasting: ActorSpellcasting<this> | null;
         synthetics: RuleElementSynthetics;
         inventory: ActorInventory<this>;
+        rules: RuleElementPF2e[];
+        conditions: ActorConditions<this>;
 
         get level(): number;
         get sourceId(): string | null;
         get attributes(): this["system"]["attributes"];
+        get abilities(): Abilities | null;
         get itemTypes(): EmbeddedItemInstances<this>;
         get slug(): string;
+        get size(): Size;
+        get hitPoints(): HitPointsSummary | null;
+        get alliance(): ActorAlliance;
+        get combatant(): CombatantPF2e | null;
+        get primaryUpdater(): UserPF2e | null;
 
+        getSelfRollOptions(prefix?: "self" | "target" | "origin"): string[];
+        getContextualClone(
+            rollOptions: string[],
+            ephemeralEffects?: (ConditionSource | EffectSource)[]
+        ): this;
+
+        applyDamage(options: ApplyDamageParams): Promise<this>;
+
+        hasCondition(...slugs: ConditionSlug[]): boolean;
         getStatistic(slug: string): Statistic<this> | null;
         getRollOptions(domains?: string[]): string[];
 
@@ -141,6 +174,20 @@ declare global {
 
         isOfType<T extends "creature" | ActorType>(...types: T[]): this is ActorInstances[T];
         isOfType(...types: string[]): boolean;
+
+        transferItemToActor(
+            targetActor: ActorPF2e,
+            item: ItemPF2e<ActorPF2e>,
+            quantity: number,
+            containerId?: string,
+            newStack?: boolean
+        ): Promise<PhysicalItemPF2e<ActorPF2e> | null>;
+
+        addToInventory(
+            itemSource: PhysicalItemSource,
+            container?: ContainerPF2e<this>,
+            newStack?: boolean
+        ): Promise<PhysicalItemPF2e<this> | null>;
 
         createEmbeddedDocuments(
             embeddedName: "Item",
@@ -158,13 +205,22 @@ declare global {
             dataId: string[],
             context?: DocumentModificationContext<this>
         ): Promise<ItemPF2e[]>;
+
+        getActiveTokens(linked: boolean | undefined, document: true): TokenDocumentPF2e[];
+        getActiveTokens(linked?: boolean | undefined, document?: false): TokenPF2e[];
+        getActiveTokens(linked?: boolean, document?: boolean): TokenDocumentPF2e[] | TokenPF2e[];
+
+        getDependentTokens(options?: {
+            scenes?: Scene | Scene[];
+            linked?: boolean;
+        }): TokenDocumentPF2e[];
     }
 
     type ActorSourcePF2e =
         // | ArmySource
         | CreatureSource
         // | HazardSource
-        // | LootSource
+        | LootSource
         | PartySource;
     // | VehicleSource;
 

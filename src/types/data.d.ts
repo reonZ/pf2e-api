@@ -30,6 +30,7 @@ declare global {
             slotIndex: number;
         };
         context?: EffectContextData;
+        fromInventory?: boolean;
     };
 
     interface HitPointsSummary {

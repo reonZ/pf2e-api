@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasFreePropertySlot = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.changeCarryType = void 0;
+exports.hasFreePropertySlot = exports.getEquippedHandwraps = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.changeCarryType = exports.calculateItemPrice = exports.MoveLootPopup = exports.HANDWRAPS_SLUG = exports.BANDS_OF_FORCE_SLUGS = void 0;
 const utils_1 = require("./utils");
+const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
+exports.HANDWRAPS_SLUG = HANDWRAPS_SLUG;
+const BANDS_OF_FORCE_SLUGS = [
+    "bands-of-force",
+    "bands-of-force-greater",
+    "bands-of-force-major",
+];
+exports.BANDS_OF_FORCE_SLUGS = BANDS_OF_FORCE_SLUGS;
 function getAnnotationLabel(annotation, hands) {
     if (!annotation)
         return null;
@@ -96,3 +104,65 @@ function hasFreePropertySlot(item) {
     return potency > 0 && item.system.runes.property.length < potency;
 }
 exports.hasFreePropertySlot = hasFreePropertySlot;
+function getEquippedHandwraps(actor) {
+    return actor.itemTypes.weapon.find((weapon) => {
+        const { category, slug, equipped, identification } = weapon._source.system;
+        const { carryType, invested, inSlot } = equipped;
+        return (category === "unarmed" &&
+            carryType === "worn" &&
+            inSlot &&
+            invested &&
+            identification.status === "identified" &&
+            slug === HANDWRAPS_SLUG);
+    });
+}
+exports.getEquippedHandwraps = getEquippedHandwraps;
+function calculateItemPrice(item, quantity = 1, ratio = 1) {
+    const coins = game.pf2e.Coins.fromPrice(item.price, quantity);
+    return ratio === 1 ? coins : coins.scale(ratio);
+}
+exports.calculateItemPrice = calculateItemPrice;
+class MoveLootPopup extends FormApplication {
+    onSubmitCallback;
+    constructor(object, options, callback) {
+        super(object, options);
+        this.onSubmitCallback = callback;
+    }
+    async getData() {
+        const [prompt, buttonLabel] = this.options.isPurchase
+            ? ["PF2E.loot.PurchaseLootMessage", "PF2E.loot.PurchaseLoot"]
+            : ["PF2E.loot.MoveLootMessage", "PF2E.loot.MoveLoot"];
+        return {
+            ...(await super.getData()),
+            quantity: {
+                default: this.options.quantity.default,
+                max: this.options.quantity.max,
+            },
+            newStack: this.options.newStack,
+            lockStack: this.options.lockStack,
+            prompt,
+            buttonLabel,
+        };
+    }
+    static get defaultOptions() {
+        return {
+            ...super.defaultOptions,
+            id: "MoveLootPopup",
+            classes: [],
+            title: game.i18n.localize("PF2E.loot.MoveLootPopupTitle"),
+            template: "systems/pf2e/templates/popups/loot/move-loot-popup.hbs",
+            width: "auto",
+            quantity: {
+                default: 1,
+                max: 1,
+            },
+            newStack: false,
+            lockStack: false,
+            isPurchase: false,
+        };
+    }
+    async _updateObject(_event, formData) {
+        this.onSubmitCallback(formData.quantity, formData.newStack);
+    }
+}
+exports.MoveLootPopup = MoveLootPopup;

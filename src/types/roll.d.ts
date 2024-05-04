@@ -1,3 +1,5 @@
+import { RollNotePF2e } from "../notes";
+
 declare global {
     interface AttackRollParams extends RollParameters {
         target?: TokenPF2e | null;
@@ -44,17 +46,11 @@ declare global {
     }
 
     interface RollParameters {
-        /** The triggering event */
         event?: MouseEvent | JQuery.TriggeredEvent;
-        /** Any options which should be used in the roll. */
         options?: string[] | Set<string>;
-        /** Optional DC data for the roll */
         dc?: CheckDC | null;
-        /** Callback called when the roll occurs. */
         callback?: (roll: Rolled<Roll>) => void;
-        /** Additional modifiers */
         modifiers?: ModifierPF2e[];
-        /** Whether to create a message from the roll */
         createMessage?: boolean;
     }
 
@@ -79,7 +75,30 @@ declare global {
         domains?: string[];
     }
 
-    type DegreeOfSuccessIndex = ZeroToThree;
+    type CriticalDoublingRule = "double-damage" | "double-dice";
+
+    interface AbstractDamageRollData extends RollOptions {
+        evaluatePersistent?: boolean;
+    }
+
+    interface DamageRollFlag {
+        outcome: DegreeOfSuccessString;
+        total: number;
+        traits: string[];
+        types: Record<string, Record<string, number>>;
+        diceResults: Record<string, Record<string, DieResult[]>>;
+        baseDamageDice: number;
+    }
+
+    interface DamageRollData extends RollDataPF2e, AbstractDamageRollData {
+        critRule?: Maybe<CriticalDoublingRule>;
+        damage?: DamageTemplate;
+        result?: DamageRollFlag;
+        degreeOfSuccess?: DegreeOfSuccessIndex | null;
+        increasedFrom?: number;
+        splashOnly?: boolean;
+        ignoredResistances?: { type: ResistanceType; max: number | null }[];
+    }
 
     class CheckRoll extends Roll {
         get roller(): UserPF2e | null;
@@ -93,9 +112,39 @@ declare global {
         options: CheckRollDataPF2e & { showBreakdown: boolean };
     }
 
-    abstract class AbstractDamageRoll extends Roll {}
+    abstract class AbstractDamageRoll extends Roll {
+        get expectedValue(): number;
+    }
 
-    class DamageRoll extends AbstractDamageRoll {}
+    class DamageRoll extends AbstractDamageRoll {
+        get instances(): DamageInstance[];
+    }
+
+    interface DamageRoll extends AbstractDamageRoll {
+        constructor: typeof DamageRoll;
+
+        options: DamageRollData & { showBreakdown: boolean };
+    }
+
+    class Grouping extends RollTerm<GroupingData> {}
+
+    interface GroupingData extends RollTermData {
+        class?: "Grouping";
+        term: RollTermData | ArithmeticExpressionData;
+    }
+
+    interface ArithmeticExpressionData extends RollTermData {
+        class?: "ArithmeticExpression";
+        operator: ArithmeticOperator;
+        operands: [RollTermData, RollTermData];
+    }
+
+    type ArithmeticOperator = "+" | "-" | "*" | "/" | "%";
+
+    class ArithmeticExpression extends RollTerm<ArithmeticExpressionData> {
+        operator: ArithmeticOperator;
+        operands: [RollTerm, RollTerm];
+    }
 }
 
 export type {};

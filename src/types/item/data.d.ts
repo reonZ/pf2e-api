@@ -16,6 +16,13 @@ declare global {
         extends Omit<ItemTraits<T>, "rarity"> {
         rarity?: never;
     }
+
+    type CoinDenomination = "pp" | "gp" | "sp" | "cp";
+
+    interface ParentedDataModelConstructionOptions<TParent extends FoundryDocument>
+        extends DataModelConstructionOptions<TParent> {
+        parent: TParent;
+    }
 }
 
 export type {};

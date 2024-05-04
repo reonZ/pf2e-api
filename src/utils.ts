@@ -1,3 +1,6 @@
+import { R } from "foundry-api";
+import { RollNotePF2e } from "./notes";
+
 function ErrorPF2e(message: string): Error {
     return Error(`PF2e System | ${message}`);
 }
@@ -35,6 +38,20 @@ function htmlClosest<E extends HTMLElement = HTMLElement>(
 function htmlClosest(child: MaybeHTML, selectors: string): HTMLElement | null {
     if (!(child instanceof Element)) return null;
     return child.closest<HTMLElement>(selectors);
+}
+
+function htmlQuery<K extends keyof HTMLElementTagNameMap>(
+    parent: MaybeHTML,
+    selectors: K
+): HTMLElementTagNameMap[K] | null;
+function htmlQuery(parent: MaybeHTML, selectors: string): HTMLElement | null;
+function htmlQuery<E extends HTMLElement = HTMLElement>(
+    parent: MaybeHTML,
+    selectors: string
+): E | null;
+function htmlQuery(parent: MaybeHTML, selectors: string): HTMLElement | null {
+    if (!(parent instanceof Element || parent instanceof Document)) return null;
+    return parent.querySelector<HTMLElement>(selectors);
 }
 
 function localizer(prefix: string): (...args: Parameters<Localization["format"]>) => string {
@@ -85,10 +102,79 @@ function getActionGlyph(action: string | number | null | ActionCost): string {
     return actionGlyphMap[sanitized]?.replace("-", "–") ?? "";
 }
 
+function extractNotes(
+    rollNotes: Record<string, RollNotePF2e[]>,
+    selectors: string[]
+): RollNotePF2e[] {
+    return selectors.flatMap((s) => (rollNotes[s] ?? []).map((n) => n.clone()));
+}
+
+function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
+    nodeName: K,
+    options?: CreateHTMLElementOptionsWithChildren
+): HTMLElementTagNameMap[K];
+function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
+    nodeName: K,
+    options?: CreateHTMLElementOptionsWithInnerHTML
+): HTMLElementTagNameMap[K];
+function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
+    nodeName: K,
+    options?: CreateHTMLElementOptionsWithNeither
+): HTMLElementTagNameMap[K];
+function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
+    nodeName: K,
+    { classes = [], dataset = {}, children = [], innerHTML }: CreateHTMLElementOptions = {}
+): HTMLElementTagNameMap[K] {
+    const element = document.createElement(nodeName);
+    if (classes.length > 0) element.classList.add(...classes);
+
+    for (const [key, value] of Object.entries(dataset).filter(
+        ([, v]) => !R.isNil(v) && v !== false
+    )) {
+        element.dataset[key] = value === true ? "" : String(value);
+    }
+
+    if (innerHTML) {
+        element.innerHTML = innerHTML;
+    } else {
+        for (const child of children) {
+            const childElement = child instanceof HTMLElement ? child : new Text(child);
+            element.appendChild(childElement);
+        }
+    }
+
+    return element;
+}
+
+interface CreateHTMLElementOptionsWithChildren extends CreateHTMLElementOptions {
+    children: (HTMLElement | string)[];
+    innerHTML?: never;
+}
+
+interface CreateHTMLElementOptionsWithInnerHTML extends CreateHTMLElementOptions {
+    children?: never;
+    innerHTML: string;
+}
+
+interface CreateHTMLElementOptionsWithNeither extends CreateHTMLElementOptions {
+    children?: never;
+    innerHTML?: never;
+}
+
+interface CreateHTMLElementOptions {
+    classes?: string[];
+    dataset?: Record<string, string | number | boolean | null | undefined>;
+    children?: (HTMLElement | string)[];
+    innerHTML?: string;
+}
+
 export {
+    createHTMLElement,
     ErrorPF2e,
+    extractNotes,
     getActionGlyph,
     htmlClosest,
+    htmlQuery,
     localizer,
     objectHasKey,
     ordinalString,

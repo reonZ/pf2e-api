@@ -43,7 +43,7 @@ declare global {
         showValueAlways: boolean;
         showUnitBulkPrice: boolean;
         hasStowingContainers: boolean;
-        invested?: { value: number; max: number } | null;
+        invested?: ValueAndMax | null;
     }
 
     interface CoinDisplayData {

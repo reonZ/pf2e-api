@@ -93,18 +93,56 @@ declare global {
         // | ActionFilters
         // | BestiaryFilters
         // | CampaignFeatureFilters
-        // | EquipmentFilters
+        | EquipmentFilters
         | FeatFilters
         // | HazardFilters
         | SpellFilters;
 
+    type MatchInfo = {
+        [term: string]: string[];
+    };
+
+    type SearchResult = {
+        id: any;
+        terms: string[];
+        queryTerms: string[];
+        score: number;
+        match: MatchInfo;
+        [key: string]: any;
+    };
+
+    type CompendiumBrowserIndexData = Omit<CompendiumIndexData, "_id"> & Partial<SearchResult>;
+
+    type SearchOptions = {};
+
+    type QueryCombination = SearchOptions & {
+        queries: Query[];
+    };
+
+    type Wildcard = typeof MiniSearch.wildcard;
+
+    type Query = QueryCombination | string | Wildcard;
+
+    class MiniSearch<T = any> {
+        static readonly wildcard: unique symbol;
+
+        search(query: Query, searchOptions?: SearchOptions): SearchResult[];
+    }
+
     abstract class CompendiumBrowserTab {
         constructor(browser: CompendiumBrowser);
+
+        browser: CompendiumBrowser;
+        filterData: BrowserFilter;
         isInitialized: boolean;
-        abstract filterData: BrowserFilter;
         defaultFilterData: this["filterData"];
+        currentIndex: CompendiumBrowserIndexData[];
+        searchEngine: MiniSearch<CompendiumBrowserIndexData>;
+        indexData: CompendiumBrowserIndexData[];
+
         init(): Promise<void>;
         open(filter?: BrowserFilter): Promise<void>;
+        arrayIncludes(array: string[], other: string[]): boolean;
         getFilterData(): Promise<this["filterData"]>;
         filterIndexData(entry: any): boolean;
         filterTraits(
@@ -112,6 +150,7 @@ declare global {
             selected: MultiselectData["selected"],
             condition: MultiselectData["conjunction"]
         ): boolean;
+        sortResult(result: CompendiumBrowserIndexData[]): CompendiumBrowserIndexData[];
     }
 
     class CompendiumBrowserFeatTab extends CompendiumBrowserTab {
@@ -122,14 +161,93 @@ declare global {
         filterData: SpellFilters;
     }
 
+    class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
+        filterData: EquipmentFilters;
+    }
+
     interface BrowserTabs {
         action: CompendiumBrowserTab;
         bestiary: CompendiumBrowserTab;
         campaignFeature: CompendiumBrowserTab;
-        equipment: CompendiumBrowserTab;
+        equipment: CompendiumBrowserEquipmentTab;
         feat: CompendiumBrowserFeatTab;
         hazard: CompendiumBrowserTab;
         spell: CompendiumBrowserSpellTab;
+    }
+
+    type TabName =
+        | "action"
+        | "bestiary"
+        | "campaignFeature"
+        | "equipment"
+        | "feat"
+        | "hazard"
+        | "spell"
+        | "settings";
+
+    interface PackInfo {
+        load: boolean;
+        name: string;
+        package: string;
+    }
+
+    type CompendiumBrowserSettings = Omit<
+        TabData<Record<string, PackInfo | undefined>>,
+        "settings"
+    >;
+
+    type TabData<T> = Record<TabName, T | null>;
+
+    interface SourceInfo {
+        load: boolean;
+        name: string;
+    }
+
+    type CompendiumBrowserSourcesList = Record<string, SourceInfo | undefined>;
+
+    interface CompendiumBrowserSources {
+        ignoreAsGM: boolean;
+        showEmptySources: boolean;
+        showUnknownSources: boolean;
+        sources: CompendiumBrowserSourcesList;
+    }
+
+    interface CompendiumBrowserSheetData {
+        user: UserPF2e;
+        settings?: { settings: CompendiumBrowserSettings; sources: CompendiumBrowserSources };
+        scrollLimit?: number;
+        showCampaign: boolean;
+    }
+
+    interface RangesInputData {
+        changed: boolean;
+        isExpanded: boolean;
+        values: {
+            min: number;
+            max: number;
+            inputMin: string;
+            inputMax: string;
+        };
+        label: string;
+    }
+
+    interface EquipmentFilters extends BaseFilterData {
+        checkboxes: {
+            armorTypes: CheckboxData;
+            itemTypes: CheckboxData;
+            rarity: CheckboxData;
+            source: CheckboxData;
+            weaponTypes: CheckboxData;
+        };
+        multiselects: {
+            traits: MultiselectData<PhysicalItemTrait>;
+        };
+        ranges: {
+            price: RangesInputData;
+        };
+        sliders: {
+            level: SliderData;
+        };
     }
 
     class CompendiumBrowser extends Application {
@@ -137,7 +255,7 @@ declare global {
 
         // openTab(name: "action", filter?: ActionFilters): Promise<void>;
         // openTab(name: "bestiary", filter?: BestiaryFilters): Promise<void>;
-        // openTab(name: "equipment", filter?: EquipmentFilters): Promise<void>;
+        openTab(name: "equipment", filter?: EquipmentFilters): Promise<void>;
         openTab(name: "feat", filter?: FeatFilters): Promise<void>;
         // openTab(name: "hazard", filter?: HazardFilters): Promise<void>;
         openTab(name: "spell", filter?: SpellFilters): Promise<void>;

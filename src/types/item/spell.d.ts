@@ -91,11 +91,7 @@ declare global {
             value: string | null;
             signature?: boolean;
             heightenedLevel?: OneToTen;
-
-            /** The level to heighten this spell to if it's a cantrip or focus spell */
             autoHeightenLevel?: OneToTen | null;
-
-            /** Number of uses if this is an innate spell */
             uses?: ValueAndMax;
         };
     }
@@ -115,7 +111,6 @@ declare global {
     interface SpellSystemData
         extends Omit<SpellSystemSource, "damage" | "description">,
             Omit<ItemSystemData, "level" | "traits"> {
-        /** Time and resources consumed in the casting of this spell */
         cast: SpellCastData;
         damage: Record<string, SpellDamage>;
         defense: SpellDefenseData | null;
@@ -155,6 +150,11 @@ declare global {
         get traits(): Set<SpellTrait>;
         get traditions(): Set<MagicTradition>;
         get spellcasting(): BaseSpellcastingEntry<NonNullable<TParent>> | null;
+        get damageKinds(): Set<DamageKind>;
+        get range(): RangeData | null;
+        get isMelee(): boolean;
+        get isRanged(): boolean;
+        get area(): (SpellArea & { label: string }) | null;
 
         computeCastRank(slotNumber?: number): OneToTen;
         loadVariant(options?: SpellVariantOptions): this | null;

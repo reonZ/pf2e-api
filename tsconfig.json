@@ -15,7 +15,7 @@
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["foundry-api"],
+        "types": ["foundry-api", "@types/tooltipster"],
         "rootDir": "src",
         "outDir": "dist"
     },

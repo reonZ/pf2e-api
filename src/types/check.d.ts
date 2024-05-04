@@ -27,7 +27,7 @@ declare global {
         mapIncreases?: Maybe<ZeroToTwo>;
         substitutions?: RollSubstitution[];
         altUsage?: Maybe<"thrown" | "melee">;
-        dosAdjustments?: DegreeOfSuccessAdjustment[];
+        dosAdjustments?: Record<DegreeOfSuccessString, { amount: number; label: string }>;
     }
 }
 

@@ -59,6 +59,53 @@ declare global {
             slotIndex: number
         ): Promise<this | null>;
     }
+
+    class ActorConditions<TActor extends ActorPF2e> extends DelegatedCollection<
+        ConditionPF2e<TActor>
+    > {
+        get active(): ConditionPF2e<TActor>[];
+        get stored(): ConditionPF2e<TActor>[];
+        get clumsy(): ConditionPF2e<TActor> | null;
+        get doomed(): ConditionPF2e<TActor> | null;
+        get drained(): ConditionPF2e<TActor> | null;
+        get dying(): ConditionPF2e<TActor> | null;
+        get enfeebled(): ConditionPF2e<TActor> | null;
+        get frightened(): ConditionPF2e<TActor> | null;
+        get sickened(): ConditionPF2e<TActor> | null;
+        get slowed(): ConditionPF2e<TActor> | null;
+        get stunned(): ConditionPF2e<TActor> | null;
+        get stupefied(): ConditionPF2e<TActor> | null;
+        get wounded(): ConditionPF2e<TActor> | null;
+
+        hasType(slug: ConditionSlug): boolean;
+        every(condition: (value: ConditionPF2e<TActor>) => boolean): boolean;
+
+        override get(
+            key: Maybe<string>,
+            options: { strict: true; active?: boolean | null; temporary?: boolean | null }
+        ): ConditionPF2e<TActor>;
+        override get(
+            key: string,
+            options?: ConditionsGetOptions
+        ): ConditionPF2e<TActor> | undefined;
+        override get(
+            key: string,
+            options?: ConditionsGetOptions
+        ): ConditionPF2e<TActor> | undefined;
+
+        set(id: string, condition: ConditionPF2e<TActor>): this;
+
+        bySlug(
+            slug: "persistent-damage",
+            options?: ConditionsBySlugOptions
+        ): PersistentDamagePF2e<TActor>[];
+        bySlug(slug: "dead", options?: ConditionsBySlugOptions): never[];
+        bySlug(
+            slug: ConditionSlug | "dead",
+            options?: ConditionsBySlugOptions
+        ): ConditionPF2e<TActor>[];
+        bySlug(slug: string, options?: ConditionsBySlugOptions): ConditionPF2e<TActor>[];
+    }
 }
 
 export type {};

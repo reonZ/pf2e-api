@@ -11,6 +11,7 @@
     "author": "Idle",
     "license": "ISC",
     "devDependencies": {
+        "@types/tooltipster": "^0.0.35",
         "typescript": "5.3.3"
     },
     "dependencies": {

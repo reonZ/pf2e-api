@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpellCollectionClass = exports.getStatisticClass = exports.getSpellClass = void 0;
+exports.getSpellCollectionClass = exports.getStatisticClass = exports.getSpellClass = exports.getDamageRollClass = void 0;
 function getStatisticClass(statistic) {
     return statistic.constructor;
 }
@@ -14,3 +14,7 @@ function getSpellClass() {
     return CONFIG.PF2E.Item.documentClasses.spell;
 }
 exports.getSpellClass = getSpellClass;
+function getDamageRollClass() {
+    return CONFIG.Dice.rolls.find((Roll) => Roll.name === "DamageRoll");
+}
+exports.getDamageRollClass = getDamageRollClass;

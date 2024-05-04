@@ -1,40 +1,9 @@
-declare global {
-    type SkillLongForm =
-        | "acrobatics"
-        | "arcana"
-        | "athletics"
-        | "crafting"
-        | "deception"
-        | "diplomacy"
-        | "intimidation"
-        | "lore"
-        | "medicine"
-        | "nature"
-        | "occultism"
-        | "performance"
-        | "religion"
-        | "society"
-        | "stealth"
-        | "survival"
-        | "thievery";
+import { SKILL_ABBREVIATIONS, SKILL_LONG_FORMS } from "../skills";
 
-    type SkillAbbreviation =
-        | "med"
-        | "acr"
-        | "arc"
-        | "ath"
-        | "cra"
-        | "dec"
-        | "dip"
-        | "itm"
-        | "nat"
-        | "occ"
-        | "prf"
-        | "rel"
-        | "soc"
-        | "ste"
-        | "sur"
-        | "thi";
+declare global {
+    type SkillAbbreviation = (typeof SKILL_ABBREVIATIONS)[number];
+    type SkillLongForm = SetElement<typeof SKILL_LONG_FORMS>;
+    type SkillLongFormWithLore = SkillLongForm | "lore";
 }
 
 export type {};

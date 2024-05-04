@@ -50,9 +50,21 @@ declare global {
 
     type TokenDocumentUUID = string;
 
-    class TokenDocumentPF2e extends TokenDocument {}
+    class TokenDocumentPF2e<TActor extends ActorPF2e = ActorPF2e> extends TokenDocument {
+        get actor(): TActor | null;
+        get scene(): Scene;
+        get playersCanSeeName(): boolean;
 
-    class TokenPF2e extends Token {}
+        simulateUpdate(actorUpdates?: Record<string, unknown>): void;
+    }
+
+    class TokenPF2e<TActor extends ActorPF2e = ActorPF2e> extends Token {
+        get actor(): TActor | null;
+    }
+
+    interface TokenPF2e {
+        document: TokenDocumentPF2e;
+    }
 }
 
 export type {};

@@ -36,7 +36,10 @@ declare global {
 
     class AbilityTraitToggles {}
 
-    class AbilityItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {}
+    class AbilityItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {
+        get frequency(): Frequency | null;
+        get actionCost(): ActionCost | null;
+    }
 
     interface AbilityItemPF2e {
         readonly _source: AbilitySource;

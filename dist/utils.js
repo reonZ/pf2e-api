@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tupleHasValue = exports.traitSlugToObject = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlClosest = exports.getActionGlyph = exports.ErrorPF2e = void 0;
+exports.tupleHasValue = exports.traitSlugToObject = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlQuery = exports.htmlClosest = exports.getActionGlyph = exports.extractNotes = exports.ErrorPF2e = exports.createHTMLElement = void 0;
+const foundry_api_1 = require("foundry-api");
 function ErrorPF2e(message) {
     return Error(`PF2e System | ${message}`);
 }
@@ -29,6 +30,12 @@ function htmlClosest(child, selectors) {
     return child.closest(selectors);
 }
 exports.htmlClosest = htmlClosest;
+function htmlQuery(parent, selectors) {
+    if (!(parent instanceof Element || parent instanceof Document))
+        return null;
+    return parent.querySelector(selectors);
+}
+exports.htmlQuery = htmlQuery;
 function localizer(prefix) {
     return (...[suffix, formatArgs]) => formatArgs
         ? game.i18n.format(`${prefix}.${suffix}`, formatArgs)
@@ -69,3 +76,26 @@ function getActionGlyph(action) {
     return actionGlyphMap[sanitized]?.replace("-", "–") ?? "";
 }
 exports.getActionGlyph = getActionGlyph;
+function extractNotes(rollNotes, selectors) {
+    return selectors.flatMap((s) => (rollNotes[s] ?? []).map((n) => n.clone()));
+}
+exports.extractNotes = extractNotes;
+function createHTMLElement(nodeName, { classes = [], dataset = {}, children = [], innerHTML } = {}) {
+    const element = document.createElement(nodeName);
+    if (classes.length > 0)
+        element.classList.add(...classes);
+    for (const [key, value] of Object.entries(dataset).filter(([, v]) => !foundry_api_1.R.isNil(v) && v !== false)) {
+        element.dataset[key] = value === true ? "" : String(value);
+    }
+    if (innerHTML) {
+        element.innerHTML = innerHTML;
+    }
+    else {
+        for (const child of children) {
+            const childElement = child instanceof HTMLElement ? child : new Text(child);
+            element.appendChild(childElement);
+        }
+    }
+    return element;
+}
+exports.createHTMLElement = createHTMLElement;

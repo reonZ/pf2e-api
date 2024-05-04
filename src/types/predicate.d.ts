@@ -29,11 +29,12 @@ declare global {
 
     type RawPredicate = PredicateStatement[];
 
-    // class PredicatePF2e {
-    //     constructor(...statements: PredicateStatement[] | [PredicateStatement[]]);
+    class Predicate extends Array<PredicateStatement> {
+        constructor(...statements: PredicateStatement[] | [PredicateStatement[]]);
 
-    //     test(options: Set<string> | string[]): boolean;
-    // }
+        test(options: Set<string> | string[]): boolean;
+        toObject(): RawPredicate;
+    }
 }
 
 export type {};

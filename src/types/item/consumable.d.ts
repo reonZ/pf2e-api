@@ -81,6 +81,12 @@ declare global {
 
     class ConsumablePF2e<TParent extends ActorPF2e = ActorPF2e> extends PhysicalItemPF2e<TParent> {
         get uses(): ValueAndMax;
+        get category(): ConsumableCategory;
+        get otherTags(): Set<OtherConsumableTag>;
+        get isAmmo(): boolean;
+        get embeddedSpell(): SpellPF2e<NonNullable<TParent>> | null;
+
+        consume(thisMany?: number): Promise<void>;
     }
 
     interface ConsumablePF2e {

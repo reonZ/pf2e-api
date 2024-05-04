@@ -1,7 +1,8 @@
 declare global {
     interface GlobalConfig {
         PF2E: {
-            skillList: Record<SkillLongForm, string>;
+            skills: Record<SkillAbbreviation, string>;
+            skillList: Record<SkillLongFormWithLore, string>;
             resistanceTypes: Record<string, string>;
             featCategories: Record<FeatCategory, string>;
             rarityTraits: Record<Rarity, string>;
@@ -16,7 +17,14 @@ declare global {
             weaponTraits: Record<string, string>;
             weaponGroups: Record<WeaponGroup, string>;
             damageTypes: Record<DamageType, string>;
+            featTraits: Record<string, string>;
+            effectTraits: Record<string, string>;
             preciousMaterials: Record<PreciousMaterialType, string>;
+            saves: {
+                fortitude: "PF2E.SavesFortitude";
+                reflex: "PF2E.SavesReflex";
+                will: "PF2E.SavesWill";
+            };
             frequencies: {
                 turn: "PF2E.Duration.turn";
                 round: "PF2E.Duration.round";
@@ -43,6 +51,7 @@ declare global {
                     spellcastingEntry: typeof SpellcastingEntryPF2e;
                 };
             };
+            chatDamageButtonShieldToggle: boolean;
         };
     }
 }

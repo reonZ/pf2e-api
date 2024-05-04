@@ -65,7 +65,9 @@ declare global {
         initiative?: never;
     }
 
-    class FamiliarPF2e extends CreaturePF2e {}
+    class FamiliarPF2e extends CreaturePF2e {
+        get master(): CharacterPF2e | null;
+    }
 
     interface FamiliarPF2e {
         readonly _source: FamiliarSource;

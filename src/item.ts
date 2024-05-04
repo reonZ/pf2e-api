@@ -1,4 +1,11 @@
-import { getActionGlyph, traitSlugToObject } from "./utils";
+import { ErrorPF2e, getActionGlyph, traitSlugToObject } from "./utils";
+
+const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
+const BANDS_OF_FORCE_SLUGS = [
+    "bands-of-force",
+    "bands-of-force-greater",
+    "bands-of-force-major",
+] as const;
 
 function getAnnotationLabel(
     annotation: NonNullable<AuxiliaryActionPurpose> | null,
@@ -126,4 +133,119 @@ function hasFreePropertySlot(item: WeaponPF2e<CharacterPF2e>) {
     return potency > 0 && item.system.runes.property.length < potency;
 }
 
-export { changeCarryType, getAnnotationLabel, getCarryTypeActionData, hasFreePropertySlot };
+function getEquippedHandwraps<T extends ActorPF2e>(actor: T) {
+    return actor.itemTypes.weapon.find((weapon) => {
+        const { category, slug, equipped, identification } = weapon._source.system;
+        const { carryType, invested, inSlot } = equipped;
+
+        return (
+            category === "unarmed" &&
+            carryType === "worn" &&
+            inSlot &&
+            invested &&
+            identification.status === "identified" &&
+            slug === HANDWRAPS_SLUG
+        );
+    });
+}
+
+function calculateItemPrice(item: PhysicalItemPF2e, quantity = 1, ratio = 1) {
+    const coins = game.pf2e.Coins.fromPrice(item.price, quantity);
+    return ratio === 1 ? coins : coins.scale(ratio);
+}
+
+class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
+    onSubmitCallback: MoveLootCallback;
+
+    constructor(object: ActorPF2e, options: Partial<MoveLootOptions>, callback: MoveLootCallback) {
+        super(object, options);
+
+        this.onSubmitCallback = callback;
+    }
+
+    override async getData() {
+        const [prompt, buttonLabel] = this.options.isPurchase
+            ? ["PF2E.loot.PurchaseLootMessage", "PF2E.loot.PurchaseLoot"]
+            : ["PF2E.loot.MoveLootMessage", "PF2E.loot.MoveLoot"];
+
+        return {
+            ...(await super.getData()),
+            quantity: {
+                default: this.options.quantity.default,
+                max: this.options.quantity.max,
+            },
+            newStack: this.options.newStack,
+            lockStack: this.options.lockStack,
+            prompt,
+            buttonLabel,
+        };
+    }
+
+    static override get defaultOptions(): MoveLootOptions {
+        return {
+            ...super.defaultOptions,
+            id: "MoveLootPopup",
+            classes: [],
+            title: game.i18n.localize("PF2E.loot.MoveLootPopupTitle"),
+            template: "systems/pf2e/templates/popups/loot/move-loot-popup.hbs",
+            width: "auto",
+            quantity: {
+                default: 1,
+                max: 1,
+            },
+            newStack: false,
+            lockStack: false,
+            isPurchase: false,
+        };
+    }
+
+    override async _updateObject(
+        _event: DragEvent,
+        formData: Record<string, unknown> & MoveLootFormData
+    ): Promise<void> {
+        this.onSubmitCallback(formData.quantity, formData.newStack);
+    }
+}
+
+interface MoveLootOptions extends FormApplicationOptions {
+    quantity: {
+        default: number;
+        max: number;
+    };
+    newStack: boolean;
+    lockStack: boolean;
+    isPurchase: boolean;
+}
+
+interface MoveLootFormData extends FormData {
+    quantity: number;
+    newStack: boolean;
+}
+
+interface PopupData {
+    quantity: {
+        default: number;
+        max: number;
+    };
+    newStack: boolean;
+    lockStack: boolean;
+    prompt: string;
+    buttonLabel: string;
+}
+
+type MoveLootCallback = (quantity: number, newStack: boolean) => void;
+
+type BandsOfForceSlug = (typeof BANDS_OF_FORCE_SLUGS)[number];
+
+export type { BandsOfForceSlug };
+export {
+    BANDS_OF_FORCE_SLUGS,
+    HANDWRAPS_SLUG,
+    MoveLootPopup,
+    calculateItemPrice,
+    changeCarryType,
+    getAnnotationLabel,
+    getCarryTypeActionData,
+    getEquippedHandwraps,
+    hasFreePropertySlot,
+};

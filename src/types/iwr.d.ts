@@ -1,5 +1,3 @@
-import { PredicatePF2e } from "..";
-
 declare global {
     type ImmunityType = string;
     type WeaknessType = string;
@@ -9,7 +7,7 @@ declare global {
 
     type IWRException<TType extends IWRType = IWRType> =
         | TType
-        | { definition: PredicatePF2e; label: string };
+        | { definition: Predicate; label: string };
 
     interface IWRSource<TType extends IWRType = IWRType> {
         type: TType;

@@ -9,27 +9,27 @@ declare global {
     interface ItemInstances<TParent extends ActorPF2e = ActorPF2e> {
         action: AbilityItemPF2e<TParent>;
         affliction: ItemPF2e<TParent>;
-        ancestry: ItemPF2e<TParent>;
-        armor: ItemPF2e<TParent>;
+        ancestry: AncestryPF2e<TParent>;
+        armor: ArmorPF2e<TParent>;
         background: ItemPF2e<TParent>;
-        backpack: ItemPF2e<TParent>;
+        backpack: ContainerPF2e<TParent>;
         book: ItemPF2e<TParent>;
         campaignFeature: ItemPF2e<TParent>;
         class: ItemPF2e<TParent>;
-        condition: ItemPF2e<TParent>;
-        consumable: ItemPF2e<TParent>;
+        condition: ConditionPF2e<TParent>;
+        consumable: ConsumablePF2e<TParent>;
         deity: ItemPF2e<TParent>;
-        effect: ItemPF2e<TParent>;
+        effect: EffectPF2e<TParent>;
         equipment: EquipmentPF2e<TParent>;
         feat: FeatPF2e<TParent>;
         heritage: ItemPF2e<TParent>;
         kit: ItemPF2e<TParent>;
         lore: ItemPF2e<TParent>;
         melee: ItemPF2e<TParent>;
-        shield: ItemPF2e<TParent>;
+        shield: ShieldPF2e<TParent>;
         spell: SpellPF2e<TParent>;
         spellcastingEntry: SpellcastingEntryPF2e<TParent>;
-        treasure: ItemPF2e<TParent>;
+        treasure: TreasurePF2e<TParent>;
         weapon: WeaponPF2e<TParent>;
     }
 
@@ -121,11 +121,11 @@ declare global {
     type ItemSourcePF2e =
         | PhysicalItemSource
         | AbilitySource
-        // | AfflictionSource
-        // | AncestrySource
+        | AfflictionSource
+        | AncestrySource
         // | BackgroundSource
         // | CampaignFeatureSource
-        // | ClassSource
+        | ClassSource
         | ConditionSource
         | DeitySource
         | EffectSource
@@ -143,9 +143,13 @@ declare global {
         get sourceId(): string | null;
         get level(): number;
         get description(): string;
-        get slug(): string;
+        get slug(): string | null;
+        get sheet(): ItemSheetPF2e<this>;
+        get quantity(): number;
 
+        getOriginData(): ItemOriginFlag;
         getRollOptions(prefix?: string, options?: { includeGranter: boolean }): string[];
+
         isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T];
         isOfType(type: "physical"): this is PhysicalItemPF2e<TParent>;
         isOfType<T extends "physical" | ItemType>(
@@ -156,6 +160,15 @@ declare global {
             ? ItemInstances<TParent>[T]
             : never;
         isOfType(...types: string[]): boolean;
+
+        toMessage(
+            event?: Maybe<Event | JQuery.TriggeredEvent>,
+            options?: {
+                rollMode?: RollMode | "roll";
+                create?: boolean;
+                data?: Record<string, unknown>;
+            }
+        ): Promise<ChatMessagePF2e | undefined>;
     }
 
     interface ItemPF2e {

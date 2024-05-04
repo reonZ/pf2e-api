@@ -64,6 +64,7 @@ declare global {
         get isSpontaneous(): boolean;
         get isInnate(): boolean;
         get isFocusPool(): boolean;
+        get isStaff(): boolean | undefined;
         get isRitual(): false;
         get isEphemeral(): false;
         get highestRank(): ZeroToTen;

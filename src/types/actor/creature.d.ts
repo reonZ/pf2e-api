@@ -181,9 +181,11 @@ declare global {
         synthetics: RuleElementSynthetics<CreaturePF2e>;
         spellcasting: ActorSpellcasting<this>;
         parties: Set<PartyPF2e>;
+        saves: Record<SaveType, Statistic>;
 
         get traits(): Set<CreatureTrait>;
         get hitPoints(): HitPointsSummary;
+        get wornArmor(): ArmorPF2e<this> | null;
 
         changeCarryType(
             item: PhysicalItemPF2e<CreaturePF2e>,

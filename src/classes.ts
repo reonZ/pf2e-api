@@ -11,4 +11,8 @@ function getSpellClass() {
     return CONFIG.PF2E.Item.documentClasses.spell;
 }
 
-export { getSpellClass, getStatisticClass, getSpellCollectionClass };
+function getDamageRollClass() {
+    return CONFIG.Dice.rolls.find((Roll) => Roll.name === "DamageRoll") as typeof DamageRoll;
+}
+
+export { getDamageRollClass, getSpellClass, getStatisticClass, getSpellCollectionClass };

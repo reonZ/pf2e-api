@@ -16,6 +16,17 @@ declare global {
             };
         };
     }
+
+    class PF2eDailiesModule extends Module {
+        api: {
+            canCastRank: (actor: CharacterPF2e, rank: ZeroToTen) => boolean | null;
+            setStaffChargesValue: (
+                actor: CharacterPF2e,
+                value?: number | undefined
+            ) => Promise<FoundryDocument<any>> | undefined;
+            openDailiesInterface: (actor: CharacterPF2e) => Promise<void>;
+        };
+    }
 }
 
 export type {};
