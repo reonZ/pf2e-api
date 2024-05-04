@@ -189,6 +189,10 @@ async function getSummarizedSpellsDataForRender(
 
     for (const entry of entries) {
         const entryId = entry.id;
+        const entryDc = entry.statistic?.dc.value;
+        const entryTooltip = entryDc
+            ? `${entry.name} - ${game.i18n.format("PF2E.DCWithValue", { dc: entryDc, text: "" })}`
+            : entry.name;
         const isFocus = entry.isFocusPool;
         const isRitual = entry.isRitual;
         const isCharges = entry.category === "charges";
@@ -239,6 +243,8 @@ async function getSummarizedSpellsDataForRender(
                     range: spell.system.range.value || "-&nbsp;",
                     rank: spell.rank,
                     entryName: entry.name,
+                    entryDc,
+                    entryTooltip,
                     consumable,
                     isBroken,
                     isFocus,
@@ -342,6 +348,8 @@ async function getSummarizedSpellsDataForRender(
 type SummarizedSpellData = {
     itemId: string;
     entryId: string;
+    entryDc: number | undefined;
+    entryTooltip: string;
     groupId: SpellSlotGroupId;
     castRank: number;
     slotId: number | undefined;

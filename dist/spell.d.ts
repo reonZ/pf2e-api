@@ -37,6 +37,8 @@ declare function getSummarizedSpellsDataForRender(actor: CreaturePF2e, sortByTyp
 type SummarizedSpellData = {
     itemId: string;
     entryId: string;
+    entryDc: number | undefined;
+    entryTooltip: string;
     groupId: SpellSlotGroupId;
     castRank: number;
     slotId: number | undefined;

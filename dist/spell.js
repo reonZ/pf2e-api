@@ -139,6 +139,10 @@ async function getSummarizedSpellsDataForRender(actor, sortByType, localize, ent
     let hasFocusCantrip = false;
     for (const entry of entries) {
         const entryId = entry.id;
+        const entryDc = entry.statistic?.dc.value;
+        const entryTooltip = entryDc
+            ? `${entry.name} - ${game.i18n.format("PF2E.DCWithValue", { dc: entryDc, text: "" })}`
+            : entry.name;
         const isFocus = entry.isFocusPool;
         const isRitual = entry.isRitual;
         const isCharges = entry.category === "charges";
@@ -182,6 +186,8 @@ async function getSummarizedSpellsDataForRender(actor, sortByType, localize, ent
                     range: spell.system.range.value || "-&nbsp;",
                     rank: spell.rank,
                     entryName: entry.name,
+                    entryDc,
+                    entryTooltip,
                     consumable,
                     isBroken,
                     isFocus,
