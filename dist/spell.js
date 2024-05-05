@@ -73,7 +73,7 @@ function getHighestSpellcastingStatistic(actor) {
         return;
     const classAttribute = actor.classDC?.attribute;
     const groupedEntries = foundry_api_1.R.groupBy(entries, (entry) => entry.statistic.mod);
-    const highestMod = foundry_api_1.R.pipe(groupedEntries, foundry_api_1.R.keys, foundry_api_1.R.sortBy([foundry_api_1.R.identity, "desc"]), foundry_api_1.R.first());
+    const highestMod = foundry_api_1.R.pipe(groupedEntries, foundry_api_1.R.keys, foundry_api_1.R.sortBy([(x) => Number(x), "desc"]), foundry_api_1.R.first());
     const highestResults = groupedEntries[highestMod].map((entry) => ({
         tradition: entry.tradition,
         statistic: entry.statistic,

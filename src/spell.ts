@@ -100,12 +100,14 @@ function getHighestSpellcastingStatistic(actor: CharacterPF2e) {
 
     const classAttribute = actor.classDC?.attribute;
     const groupedEntries = R.groupBy(entries, (entry) => entry.statistic.mod);
+
     const highestMod = R.pipe(
         groupedEntries,
         R.keys,
-        R.sortBy([R.identity, "desc"]),
+        R.sortBy([(x) => Number(x), "desc"]),
         R.first()
-    ) as unknown as number;
+    ) as string;
+
     const highestResults = groupedEntries[highestMod].map((entry) => ({
         tradition: entry.tradition,
         statistic: entry.statistic,
