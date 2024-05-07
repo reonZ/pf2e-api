@@ -155,6 +155,7 @@ declare global {
         get alliance(): ActorAlliance;
         get combatant(): CombatantPF2e | null;
         get primaryUpdater(): UserPF2e | null;
+        get token(): TokenDocumentPF2e | null;
 
         getSelfRollOptions(prefix?: "self" | "target" | "origin"): string[];
         getContextualClone(

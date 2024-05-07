@@ -116,6 +116,7 @@ declare global {
     ) => Promise<void> | void;
 
     interface StatisticRollParameters {
+        event?: MouseEvent;
         identifier?: string;
         action?: string;
         token?: Maybe<TokenDocumentPF2e>;
