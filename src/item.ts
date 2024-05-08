@@ -1,4 +1,6 @@
-import { ErrorPF2e, getActionGlyph, traitSlugToObject } from "./utils";
+import { createHTMLFromString } from "foundry-api";
+import { getDamageRollClass } from "./classes";
+import { getActionGlyph, traitSlugToObject } from "./utils";
 
 const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
 const BANDS_OF_FORCE_SLUGS = [
@@ -154,6 +156,68 @@ function calculateItemPrice(item: PhysicalItemPF2e, quantity = 1, ratio = 1) {
     return ratio === 1 ? coins : coins.scale(ratio);
 }
 
+async function consumeItem(event: Event, item: ConsumablePF2e) {
+    const uses = item.uses;
+    if (uses.max && uses.value < 1) return null;
+
+    if (["wand", "scroll"].includes(item.category) && item.system.spell) {
+        return item.consume();
+    }
+
+    const actor = item.actor;
+    const multiUse = uses.max > 1;
+    const key = uses.value === 1 && multiUse ? "UseExhausted" : multiUse ? "UseMulti" : "UseSingle";
+    const flags = {
+        pf2e: {
+            origin: {
+                sourceId: item.sourceId,
+                uuid: item.uuid,
+                type: item.type,
+            },
+        },
+    };
+    const speaker = ChatMessage.getSpeaker({ actor });
+    const template = (await item.toMessage(event, { create: false })).content;
+    const contentHTML = createHTMLFromString(template);
+
+    contentHTML.querySelector("button[data-action='consume']")?.remove();
+    contentHTML.querySelector("footer")?.remove();
+
+    const flavor = contentHTML.outerHTML;
+
+    if (item.system.damage) {
+        const DamageRoll = getDamageRollClass();
+        const { formula, type, kind } = item.system.damage;
+        const roll = new DamageRoll(`(${formula})[${type},${kind}]`);
+
+        roll.toMessage({
+            speaker,
+            flavor,
+            flags,
+        });
+    } else {
+        ChatMessage.create({ speaker, content: flavor, flags });
+    }
+
+    if (item.system.uses.autoDestroy && uses.value <= 1) {
+        const quantityRemaining = item.quantity;
+
+        const isPreservedAmmo = item.category === "ammo" && item.system.rules.length > 0;
+        if (quantityRemaining <= 1 && !isPreservedAmmo) {
+            return item.delete();
+        } else {
+            return item.update({
+                "system.quantity": Math.max(quantityRemaining - 1, 0),
+                "system.uses.value": uses.max,
+            });
+        }
+    } else {
+        return item.update({
+            "system.uses.value": Math.max(uses.value - 1, 0),
+        });
+    }
+}
+
 class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
     onSubmitCallback: MoveLootCallback;
 
@@ -237,15 +301,16 @@ type MoveLootCallback = (quantity: number, newStack: boolean) => void;
 
 type BandsOfForceSlug = (typeof BANDS_OF_FORCE_SLUGS)[number];
 
-export type { BandsOfForceSlug };
 export {
     BANDS_OF_FORCE_SLUGS,
     HANDWRAPS_SLUG,
     MoveLootPopup,
     calculateItemPrice,
     changeCarryType,
+    consumeItem,
     getAnnotationLabel,
     getCarryTypeActionData,
     getEquippedHandwraps,
     hasFreePropertySlot,
 };
+export type { BandsOfForceSlug };

@@ -165,7 +165,7 @@ declare global {
         toMessage(
             event?: Maybe<MouseEvent | JQuery.TriggeredEvent>,
             options?: SpellToMessageOptions
-        ): Promise<ChatMessagePF2e | undefined>;
+        ): Promise<ChatMessagePF2e>;
     }
 
     interface SpellPF2e {

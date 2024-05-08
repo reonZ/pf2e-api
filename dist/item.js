@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasFreePropertySlot = exports.getEquippedHandwraps = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.changeCarryType = exports.calculateItemPrice = exports.MoveLootPopup = exports.HANDWRAPS_SLUG = exports.BANDS_OF_FORCE_SLUGS = void 0;
+exports.hasFreePropertySlot = exports.getEquippedHandwraps = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.consumeItem = exports.changeCarryType = exports.calculateItemPrice = exports.MoveLootPopup = exports.HANDWRAPS_SLUG = exports.BANDS_OF_FORCE_SLUGS = void 0;
+const foundry_api_1 = require("foundry-api");
+const classes_1 = require("./classes");
 const utils_1 = require("./utils");
 const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
 exports.HANDWRAPS_SLUG = HANDWRAPS_SLUG;
@@ -122,6 +124,64 @@ function calculateItemPrice(item, quantity = 1, ratio = 1) {
     return ratio === 1 ? coins : coins.scale(ratio);
 }
 exports.calculateItemPrice = calculateItemPrice;
+async function consumeItem(event, item) {
+    const uses = item.uses;
+    if (uses.max && uses.value < 1)
+        return null;
+    if (["wand", "scroll"].includes(item.category) && item.system.spell) {
+        return item.consume();
+    }
+    const actor = item.actor;
+    const multiUse = uses.max > 1;
+    const key = uses.value === 1 && multiUse ? "UseExhausted" : multiUse ? "UseMulti" : "UseSingle";
+    const flags = {
+        pf2e: {
+            origin: {
+                sourceId: item.sourceId,
+                uuid: item.uuid,
+                type: item.type,
+            },
+        },
+    };
+    const speaker = ChatMessage.getSpeaker({ actor });
+    const template = (await item.toMessage(event, { create: false })).content;
+    const contentHTML = (0, foundry_api_1.createHTMLFromString)(template);
+    contentHTML.querySelector("button[data-action='consume']")?.remove();
+    contentHTML.querySelector("footer")?.remove();
+    const flavor = contentHTML.outerHTML;
+    if (item.system.damage) {
+        const DamageRoll = (0, classes_1.getDamageRollClass)();
+        const { formula, type, kind } = item.system.damage;
+        const roll = new DamageRoll(`(${formula})[${type},${kind}]`);
+        roll.toMessage({
+            speaker,
+            flavor,
+            flags,
+        });
+    }
+    else {
+        ChatMessage.create({ speaker, content: flavor, flags });
+    }
+    if (item.system.uses.autoDestroy && uses.value <= 1) {
+        const quantityRemaining = item.quantity;
+        const isPreservedAmmo = item.category === "ammo" && item.system.rules.length > 0;
+        if (quantityRemaining <= 1 && !isPreservedAmmo) {
+            return item.delete();
+        }
+        else {
+            return item.update({
+                "system.quantity": Math.max(quantityRemaining - 1, 0),
+                "system.uses.value": uses.max,
+            });
+        }
+    }
+    else {
+        return item.update({
+            "system.uses.value": Math.max(uses.value - 1, 0),
+        });
+    }
+}
+exports.consumeItem = consumeItem;
 class MoveLootPopup extends FormApplication {
     onSubmitCallback;
     constructor(object, options, callback) {

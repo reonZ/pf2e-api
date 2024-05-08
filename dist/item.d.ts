@@ -7,6 +7,7 @@ declare function changeCarryType(actor: CreaturePF2e, item: PhysicalItemPF2e<Cre
 declare function hasFreePropertySlot(item: WeaponPF2e<CharacterPF2e>): boolean;
 declare function getEquippedHandwraps<T extends ActorPF2e>(actor: T): WeaponPF2e<T> | undefined;
 declare function calculateItemPrice(item: PhysicalItemPF2e, quantity?: number, ratio?: number): CoinsPF2e;
+declare function consumeItem(event: Event, item: ConsumablePF2e): Promise<void | ConsumablePF2e<ActorPF2e> | null>;
 declare class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
     onSubmitCallback: MoveLootCallback;
     constructor(object: ActorPF2e, options: Partial<MoveLootOptions>, callback: MoveLootCallback);
@@ -38,5 +39,5 @@ interface MoveLootFormData extends FormData {
 }
 type MoveLootCallback = (quantity: number, newStack: boolean) => void;
 type BandsOfForceSlug = (typeof BANDS_OF_FORCE_SLUGS)[number];
+export { BANDS_OF_FORCE_SLUGS, HANDWRAPS_SLUG, MoveLootPopup, calculateItemPrice, changeCarryType, consumeItem, getAnnotationLabel, getCarryTypeActionData, getEquippedHandwraps, hasFreePropertySlot, };
 export type { BandsOfForceSlug };
-export { BANDS_OF_FORCE_SLUGS, HANDWRAPS_SLUG, MoveLootPopup, calculateItemPrice, changeCarryType, getAnnotationLabel, getCarryTypeActionData, getEquippedHandwraps, hasFreePropertySlot, };
