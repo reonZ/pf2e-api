@@ -1,10 +1,10 @@
 import { isInstanceOf } from "foundry-api";
 
-function renderApplication(types: string | string[]) {
-    types = Array.isArray(types) ? types : [types];
+function renderApplication(type: string | string[]) {
+    const types = Array.isArray(type) ? type : [type];
 
     const apps = Object.values(ui.windows).filter((app): app is Application =>
-        types.some((type) => isInstanceOf(app, type))
+        types.some((x) => isInstanceOf(app, x))
     );
 
     for (const app of apps) {
@@ -12,16 +12,16 @@ function renderApplication(types: string | string[]) {
     }
 }
 
-function renderActorSheets(types: ActorSheetType | ActorSheetType[] = ["ActorSheetPF2e"]) {
-    renderApplication(types);
+function renderActorSheets(type: ActorSheetType | ActorSheetType[] = ["ActorSheetPF2e"]) {
+    renderApplication(type);
 }
 
 function renderCharacterSheets() {
     renderActorSheets(["CharacterSheetPF2e"]);
 }
 
-function renderItemSheets(types: ItemSheetType | ItemSheetType[] = ["ItemSheetPF2e"]) {
-    renderApplication(types);
+function renderItemSheets(type: ItemSheetType | ItemSheetType[] = ["ItemSheetPF2e"]) {
+    renderApplication(type);
 }
 
 type ActorSheetType =
