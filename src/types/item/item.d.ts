@@ -161,6 +161,16 @@ declare global {
             : never;
         isOfType(...types: string[]): boolean;
 
+        static fromDropData<TDocument extends foundry.abstract.Document>(
+            this: ConstructorOf<TDocument>,
+            data: object,
+            options?: Record<string, unknown>
+        ): Promise<TDocument | undefined>;
+        static fromDropData(
+            data: object,
+            options?: Record<string, unknown>
+        ): Promise<foundry.abstract.Document | undefined>;
+
         toMessage(
             event?: Maybe<Event | JQuery.TriggeredEvent>,
             options?: {

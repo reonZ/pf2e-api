@@ -51,6 +51,25 @@ declare global {
                     spellcastingEntry: typeof SpellcastingEntryPF2e;
                 };
             };
+            actionsNumber: {
+                1: "PF2E.ActionNumber1";
+                2: "PF2E.ActionNumber2";
+                3: "PF2E.ActionNumber3";
+            };
+            actionTypes: {
+                action: "PF2E.ActionTypeAction";
+                reaction: "PF2E.ActionTypeReaction";
+                free: "PF2E.ActionTypeFree";
+                passive: "PF2E.ActionTypePassive";
+            };
+            abilities: {
+                str: "PF2E.AbilityStr";
+                dex: "PF2E.AbilityDex";
+                con: "PF2E.AbilityCon";
+                int: "PF2E.AbilityInt";
+                wis: "PF2E.AbilityWis";
+                cha: "PF2E.AbilityCha";
+            };
             chatDamageButtonShieldToggle: boolean;
         };
     }

@@ -156,6 +156,7 @@ declare global {
         get combatant(): CombatantPF2e | null;
         get primaryUpdater(): UserPF2e | null;
         get token(): TokenDocumentPF2e | null;
+        get isDead(): boolean;
 
         getSelfRollOptions(prefix?: "self" | "target" | "origin"): string[];
         getContextualClone(

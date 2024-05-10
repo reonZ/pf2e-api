@@ -1,8 +1,10 @@
 import { isInstanceOf } from "foundry-api";
 
-function renderCharacterSheets() {
-    const apps = Object.values(ui.windows).filter((app): app is CharacterSheetPF2e =>
-        isInstanceOf<CharacterSheetPF2e>(app, "CharacterSheetPF2e")
+function renderApplication(types: string | string[]) {
+    types = Array.isArray(types) ? types : [types];
+
+    const apps = Object.values(ui.windows).filter((app): app is Application =>
+        types.some((type) => isInstanceOf(app, type))
     );
 
     for (const app of apps) {
@@ -10,4 +12,24 @@ function renderCharacterSheets() {
     }
 }
 
-export { renderCharacterSheets };
+function renderActorSheets(types: ActorSheetType | ActorSheetType[] = ["ActorSheetPF2e"]) {
+    renderApplication(types);
+}
+
+function renderCharacterSheets() {
+    renderActorSheets(["CharacterSheetPF2e"]);
+}
+
+function renderItemSheets(types: ItemSheetType | ItemSheetType[] = ["ItemSheetPF2e"]) {
+    renderApplication(types);
+}
+
+type ActorSheetType =
+    | "ActorSheetPF2e"
+    | "CharacterSheetPF2e"
+    | "CreatureSheetPF2e"
+    | "NPCSheetPF2e";
+
+type ItemSheetType = "AbilitySheetPF2e" | "FeatSheetPF2e" | "ItemSheetPF2e" | "LootSheetPF2e";
+
+export { renderActorSheets, renderCharacterSheets, renderItemSheets };
