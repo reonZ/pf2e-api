@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTabFilterData = exports.filterTraits = void 0;
 function getTabFilterData(tabName) {
     const tab = game.pf2e.compendiumBrowser.tabs[tabName];
-    return deepClone(tab.defaultFilterData ?? tab.filterData);
+    return foundry.utils.deepClone(tab.defaultFilterData ?? tab.filterData);
 }
 exports.getTabFilterData = getTabFilterData;
 function filterTraits(traits, selected, condition) {

@@ -75,7 +75,7 @@ function getTranslatedSkills() {
                 .toLocaleLowerCase(game.i18n.lang);
         }
     }
-    return deepClone(TRANSLATED_SKILL);
+    return foundry.utils.deepClone(TRANSLATED_SKILL);
 }
 
 export {

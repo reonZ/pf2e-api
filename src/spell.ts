@@ -25,14 +25,14 @@ type RawStatisticData = Omit<StatisticData, "modifiers"> & {
 };
 
 function getStatisticData(statistic: Statistic) {
-    const data = deepClone(statistic.data) as RawStatisticData;
+    const data = foundry.utils.deepClone(statistic.data) as RawStatisticData;
     data.modifiers = (statistic.modifiers ?? []).map((modifier) => modifier.toObject());
     return data;
 }
 
 function createStatisticFromRawData(actor: CreaturePF2e, data: RawStatisticData) {
     const Statistic = getStatisticClass(actor.skills.acrobatics);
-    const statisticData = deepClone(data) as StatisticData;
+    const statisticData = foundry.utils.deepClone(data) as StatisticData;
 
     statisticData.modifiers = data.modifiers.map((modifier) => new game.pf2e.Modifier(modifier));
     return new Statistic(actor, statisticData);

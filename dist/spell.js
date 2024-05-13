@@ -16,13 +16,13 @@ exports.EFFECT_AREA_SHAPES = EFFECT_AREA_SHAPES;
 const MAGIC_TRADITIONS = new Set(["arcane", "divine", "occult", "primal"]);
 exports.MAGIC_TRADITIONS = MAGIC_TRADITIONS;
 function getStatisticData(statistic) {
-    const data = deepClone(statistic.data);
+    const data = foundry.utils.deepClone(statistic.data);
     data.modifiers = (statistic.modifiers ?? []).map((modifier) => modifier.toObject());
     return data;
 }
 function createStatisticFromRawData(actor, data) {
     const Statistic = (0, _1.getStatisticClass)(actor.skills.acrobatics);
-    const statisticData = deepClone(data);
+    const statisticData = foundry.utils.deepClone(data);
     statisticData.modifiers = data.modifiers.map((modifier) => new game.pf2e.Modifier(modifier));
     return new Statistic(actor, statisticData);
 }

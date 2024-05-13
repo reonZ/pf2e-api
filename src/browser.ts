@@ -3,7 +3,7 @@ function getTabFilterData<
     T extends CompendiumBrowserTab = BrowserTabs[N]
 >(tabName: N) {
     const tab = game.pf2e.compendiumBrowser.tabs[tabName] as T;
-    return deepClone(tab.defaultFilterData ?? tab.filterData);
+    return foundry.utils.deepClone(tab.defaultFilterData ?? tab.filterData);
 }
 
 function filterTraits(
