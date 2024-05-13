@@ -276,7 +276,7 @@ async function selfApplyEffectFromMessage(message, html) {
     if ((0, foundry_api_1.isInstanceOf)(target, "ActorPF2e") &&
         (0, foundry_api_1.isInstanceOf)(effect, "EffectPF2e")) {
         const traits = item.system.traits.value?.filter((t) => t in CONFIG.PF2E.effectTraits) ?? [];
-        const effectSource = mergeObject(effect.toObject(), {
+        const effectSource = foundry.utils.mergeObject(effect.toObject(), {
             _id: null,
             system: {
                 context: {

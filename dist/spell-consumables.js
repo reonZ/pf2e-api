@@ -76,7 +76,10 @@ async function createConsumableFromSpell(spell, { type, heightenedLevel = spell.
     })();
     // Cantrip deck casts at level 1
     if (type !== "cantripDeck5") {
-        consumableSource.system.spell = mergeObject(spell._source, { _id: randomID(), system: { location: { value: null, heightenedLevel } } }, { inplace: false });
+        consumableSource.system.spell = foundry.utils.mergeObject(spell._source, {
+            _id: foundry.utils.randomID(),
+            system: { location: { value: null, heightenedLevel } },
+        }, { inplace: false });
     }
     if (mystified) {
         consumableSource.system.identification.status = "unidentified";

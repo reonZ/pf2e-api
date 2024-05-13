@@ -343,7 +343,7 @@ async function selfApplyEffectFromMessage(message: ChatMessagePF2e, html: HTMLEl
         isInstanceOf<EffectPF2e>(effect, "EffectPF2e")
     ) {
         const traits = item.system.traits.value?.filter((t) => t in CONFIG.PF2E.effectTraits) ?? [];
-        const effectSource: EffectSource = mergeObject(effect.toObject(), {
+        const effectSource: EffectSource = foundry.utils.mergeObject(effect.toObject(), {
             _id: null,
             system: {
                 context: {

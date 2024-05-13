@@ -124,9 +124,12 @@ async function createConsumableFromSpell(
 
     // Cantrip deck casts at level 1
     if (type !== "cantripDeck5") {
-        consumableSource.system.spell = mergeObject(
+        consumableSource.system.spell = foundry.utils.mergeObject(
             spell._source,
-            { _id: randomID(), system: { location: { value: null, heightenedLevel } } },
+            {
+                _id: foundry.utils.randomID(),
+                system: { location: { value: null, heightenedLevel } },
+            },
             { inplace: false }
         );
     }
