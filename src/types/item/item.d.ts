@@ -178,7 +178,7 @@ declare global {
                 create?: boolean;
                 data?: Record<string, unknown>;
             }
-        ): Promise<ChatMessagePF2e>;
+        ): Promise<ChatMessagePF2e | undefined>;
     }
 
     interface ItemPF2e {
