@@ -45,6 +45,8 @@ declare global {
         item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>;
     }
 
+    type Alignment = "CE" | "LE" | "LG" | "NG" | "CG" | "LN" | "N" | "CN" | "NE";
+
     type DamageRollFunction = (
         params?: DamageRollParams
     ) => Promise<string | Rolled<DamageRoll> | null>;

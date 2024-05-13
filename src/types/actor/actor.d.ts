@@ -94,11 +94,11 @@ declare global {
     };
 
     interface ActorInstances {
-        army: ActorPF2e;
+        army: ArmorPF2e;
         character: CharacterPF2e;
         creature: CreaturePF2e;
         familiar: FamiliarPF2e;
-        hazard: ActorPF2e;
+        hazard: HazardPF2e;
         loot: LootPF2e;
         party: PartyPF2e;
         npc: NPCPF2e;
@@ -218,12 +218,7 @@ declare global {
         }): TokenDocumentPF2e[];
     }
 
-    type ActorSourcePF2e =
-        // | ArmySource
-        | CreatureSource
-        // | HazardSource
-        | LootSource
-        | PartySource;
+    type ActorSourcePF2e = ArmySource | CreatureSource | HazardSource | LootSource | PartySource;
     // | VehicleSource;
 
     interface ActorPF2e {

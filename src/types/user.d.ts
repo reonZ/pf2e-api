@@ -10,6 +10,9 @@ declare global {
     }
 
     class UserPF2e extends User {
+        targets: Set<TokenPF2e>;
+
+        get character(): ActorPF2e | null;
         get settings(): Readonly<UserSettingsPF2e>;
 
         getActiveTokens(): TokenDocumentPF2e[];

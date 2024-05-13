@@ -11,6 +11,23 @@ declare global {
         flags: DeepPartial<CharacterFlags>;
     };
 
+    interface CharacterAttributes
+        extends Omit<CharacterAttributesSource, "immunities" | "weaknesses" | "resistances">,
+            CreatureAttributes {
+        classDC: ClassDCData | null;
+        spellDC: { rank: number; value: number } | null;
+        classOrSpellDC: { rank: number; value: number };
+        classhp: number;
+        ancestryhp: number;
+        handsFree: number;
+        familiarAbilities: { value: number };
+        hp: CharacterHitPoints;
+        speed: CreatureSpeeds;
+        shield: HeldShieldData;
+        polymorphed: boolean;
+        battleForm: boolean;
+    }
+
     interface CharacterAttributesSource extends ActorAttributesSource {
         hp: {
             value: number;
@@ -350,6 +367,7 @@ declare global {
 
         get heroPoints(): ValueAndMax;
         get abilities(): CharacterAbilities;
+        get attributes(): CharacterAttributes;
 
         getCraftingEntries(formulas?: CraftingFormula[]): Promise<CraftingEntry[]>;
     }

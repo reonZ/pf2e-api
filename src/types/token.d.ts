@@ -60,6 +60,9 @@ declare global {
 
     class TokenPF2e<TActor extends ActorPF2e = ActorPF2e> extends Token {
         get actor(): TActor | null;
+        get isAnimating(): boolean;
+
+        distanceTo(target: TokenPF2e, options?: { reach?: number | null }): number;
     }
 
     interface TokenPF2e {
