@@ -126,7 +126,7 @@ async function changeCarryType(
         content,
         speaker: ChatMessage.getSpeaker({ actor, token }),
         flavor,
-        type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+        type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
     });
 }
 

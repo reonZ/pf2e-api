@@ -24,7 +24,7 @@ async function createManipulationMessage(subtitle, content, actor, senderId) {
         },
         flavor: await createManipulateFlavor(subtitle),
         content: content,
-        type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+        type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
     });
 }
 function createManipulateFlavor(subtitle) {

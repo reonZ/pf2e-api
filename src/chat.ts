@@ -33,7 +33,7 @@ async function createManipulationMessage(
         },
         flavor: await createManipulateFlavor(subtitle),
         content: content,
-        type: CONST.CHAT_MESSAGE_TYPES.EMOTE,
+        type: CONST.CHAT_MESSAGE_STYLES.EMOTE,
     });
 }
 
