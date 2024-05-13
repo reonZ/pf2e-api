@@ -76,7 +76,7 @@ class DegreeOfSuccess {
             case "criticalSuccess":
                 return 3;
             default:
-                return Math.clamped(degreeOfSuccess + amount, 0, 3);
+                return Math.clamp(degreeOfSuccess + amount, 0, 3);
         }
     }
     #adjustDegreeByDieValue(degree) {

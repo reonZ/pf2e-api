@@ -99,7 +99,7 @@ class DegreeOfSuccess {
             case "criticalSuccess":
                 return 3;
             default:
-                return Math.clamped(degreeOfSuccess + amount, 0, 3) as DegreeOfSuccessIndex;
+                return Math.clamp(degreeOfSuccess + amount, 0, 3) as DegreeOfSuccessIndex;
         }
     }
 
