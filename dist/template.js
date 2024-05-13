@@ -1,25 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTemplateTokens = void 0;
-/**
- * @param {unknown} measuredTemplate
- * @param {{collisionOrigin?: {x: number, y: number}, collisionType?: "move" | "sight"}} [options]
- * @returns {unknown[]}
- */
 function getTemplateTokens(measuredTemplate, { collisionOrigin, collisionType = "move", } = {}) {
-    const { grid, dimensions } = canvas;
+    const grid = canvas.interface.grid;
+    const dimensions = canvas.dimensions;
     const template = measuredTemplate instanceof MeasuredTemplateDocument
         ? measuredTemplate.object
         : measuredTemplate;
     if (!canvas.scene || !template?.highlightId || !grid || !dimensions)
         return [];
     const gridHighlight = grid.getHighlightLayer(template.highlightId);
-    if (!gridHighlight || grid.type !== CONST.GRID_TYPES.SQUARE)
+    if (!gridHighlight || canvas.grid.type !== CONST.GRID_TYPES.SQUARE)
         return [];
+    const gridSize = canvas.grid.size;
+    const containedTokens = [];
     const origin = collisionOrigin ?? template.center;
     const tokens = canvas.tokens.quadtree.getObjects(gridHighlight.getLocalBounds(undefined, true));
-    const gridSize = grid.size;
-    const containedTokens = [];
     for (const token of tokens) {
         const tokenDoc = token.document;
         const tokenPositions = [];
@@ -27,10 +23,10 @@ function getTemplateTokens(measuredTemplate, { collisionOrigin, collisionType = 
             const tokenX = Math.floor(token.x / gridSize) * gridSize;
             const tokenY = Math.floor(token.y / gridSize) * gridSize;
             const y = tokenY + h * gridSize;
-            tokenPositions.push(`${tokenX}.${y}`);
+            tokenPositions.push(`${tokenX},${y}`);
             if (tokenDoc.width > 1) {
                 for (let w = 1; w < tokenDoc.width; w++) {
-                    tokenPositions.push(`${tokenX + w * gridSize}.${y}`);
+                    tokenPositions.push(`${tokenX + w * gridSize},${y}`);
                 }
             }
         }
@@ -38,19 +34,17 @@ function getTemplateTokens(measuredTemplate, { collisionOrigin, collisionType = 
             if (!gridHighlight.positions.has(position)) {
                 continue;
             }
-            const [gx, gy] = position.split(".").map((s) => Number(s));
+            const [gx, gy] = position.split(",").map((s) => Number(s));
             const destination = {
                 x: gx + dimensions.size * 0.5,
                 y: gy + dimensions.size * 0.5,
             };
             if (destination.x < 0 || destination.y < 0)
                 continue;
-            const hasCollision = canvas.ready &&
-                collisionType &&
-                CONFIG.Canvas.polygonBackends[collisionType].testCollision(origin, destination, {
-                    type: collisionType,
-                    mode: "any",
-                });
+            const hasCollision = CONFIG.Canvas.polygonBackends[collisionType].testCollision(origin, destination, {
+                type: collisionType,
+                mode: "any",
+            });
             if (!hasCollision) {
                 containedTokens.push(token);
                 break;
