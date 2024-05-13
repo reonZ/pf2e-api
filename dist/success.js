@@ -30,7 +30,7 @@ class DegreeOfSuccess {
             this.dieResult =
                 (roll.isDeterministic
                     ? roll.terms.find((t) => t instanceof NumericTerm)
-                    : roll.dice.find((d) => d instanceof Die && d.faces === 20))?.total ?? 1;
+                    : roll.dice.find((d) => d instanceof foundry.dice.terms.Die && d.faces === 20))?.total ?? 1;
             this.rollTotal = roll.total;
         }
         else {
