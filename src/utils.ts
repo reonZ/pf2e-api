@@ -146,6 +146,21 @@ function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
     return element;
 }
 
+let intlNumberFormat: Intl.NumberFormat;
+function signedInteger(
+    value: number,
+    { emptyStringZero = false, zeroIsNegative = false } = {}
+): string {
+    if (value === 0 && emptyStringZero) return "";
+    const nf = (intlNumberFormat ??= new Intl.NumberFormat(game.i18n.lang, {
+        maximumFractionDigits: 0,
+        signDisplay: "always",
+    }));
+    const maybeNegativeZero = zeroIsNegative && value === 0 ? -0 : value;
+
+    return nf.format(maybeNegativeZero);
+}
+
 interface CreateHTMLElementOptionsWithChildren extends CreateHTMLElementOptions {
     children: (HTMLElement | string)[];
     innerHTML?: never;
@@ -179,6 +194,7 @@ export {
     objectHasKey,
     ordinalString,
     setHasElement,
+    signedInteger,
     traitSlugToObject,
     tupleHasValue,
 };

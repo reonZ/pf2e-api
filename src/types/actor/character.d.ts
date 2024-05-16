@@ -207,23 +207,6 @@ declare global {
         sp?: ValueAndMax;
     }
 
-    interface CharacterAttributes
-        extends Omit<CharacterAttributesSource, "immunities" | "weaknesses" | "resistances">,
-            CreatureAttributes {
-        classDC: ClassDCData | null;
-        spellDC: { rank: number; value: number } | null;
-        classOrSpellDC: { rank: number; value: number };
-        classhp: number;
-        ancestryhp: number;
-        handsFree: number;
-        familiarAbilities: { value: number };
-        hp: CharacterHitPoints;
-        speed: CreatureSpeeds;
-        shield: HeldShieldData;
-        polymorphed: boolean;
-        battleForm: boolean;
-    }
-
     interface CharacterPerceptionData extends CreaturePerceptionData {
         rank: ZeroToFour;
     }

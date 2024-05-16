@@ -114,10 +114,11 @@ declare global {
         attribute: AttributeString;
     }
 
-    interface AttributeBasedTraceData extends StatisticTraceData {
+    interface AttributeBasedTraceData extends Omit<StatisticTraceData, "slug"> {
         attribute: AttributeString;
         value: number;
         breakdown: string;
+        slug: SaveType;
     }
 
     interface SaveData extends AttributeBasedTraceData {

@@ -13,3 +13,4 @@ export * from "./npc";
 export * from "./party";
 export * from "./sheet";
 export * from "./spellcasting";
+export * from "./vehicle";

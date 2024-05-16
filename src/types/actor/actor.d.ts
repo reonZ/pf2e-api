@@ -102,7 +102,7 @@ declare global {
         loot: LootPF2e;
         party: PartyPF2e;
         npc: NPCPF2e;
-        vehicle: ActorPF2e;
+        vehicle: VehiclePF2e;
     }
 
     type ActorType = keyof ActorInstances;
@@ -218,8 +218,13 @@ declare global {
         }): TokenDocumentPF2e[];
     }
 
-    type ActorSourcePF2e = ArmySource | CreatureSource | HazardSource | LootSource | PartySource;
-    // | VehicleSource;
+    type ActorSourcePF2e =
+        | ArmySource
+        | CreatureSource
+        | HazardSource
+        | LootSource
+        | PartySource
+        | VehicleSource;
 
     interface ActorPF2e {
         readonly _source: ActorSourcePF2e;
