@@ -21,6 +21,7 @@ __exportStar(require("./chat"), exports);
 __exportStar(require("./classes"), exports);
 __exportStar(require("./classes"), exports);
 __exportStar(require("./data"), exports);
+__exportStar(require("./dc"), exports);
 __exportStar(require("./effect"), exports);
 __exportStar(require("./item"), exports);
 __exportStar(require("./notes"), exports);

@@ -45,8 +45,16 @@ declare global {
         alterations?: DamageAlteration[];
     }
 
+    class RollNotePF2e {}
+
     class StatisticModifier {
         constructor(slug: string, modifiers?: ModifierPF2e[], rollOptions?: string[] | Set<string>);
+
+        slug: string;
+        label?: string;
+        totalModifier: number;
+        notes?: RollNotePF2e[];
+        domains?: string[];
     }
 
     class ModifierPF2e {

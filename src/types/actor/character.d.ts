@@ -12,7 +12,10 @@ declare global {
     };
 
     interface CharacterAttributes
-        extends Omit<CharacterAttributesSource, "immunities" | "weaknesses" | "resistances">,
+        extends Omit<
+                CharacterAttributesSource,
+                "immunities" | "weaknesses" | "resistances" | "speed"
+            >,
             CreatureAttributes {
         classDC: ClassDCData | null;
         spellDC: { rank: number; value: number } | null;
@@ -237,7 +240,7 @@ declare global {
     interface CharacterSystemData
         extends Omit<
                 CharacterSystemSource,
-                "customModifiers" | "perception" | "resources" | "saves" | "traits"
+                "customModifiers" | "perception" | "resources" | "saves" | "traits" | "attributes"
             >,
             CreatureSystemData {
         abilities: CharacterAbilities;

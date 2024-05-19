@@ -17,6 +17,10 @@ declare function extractNotes(rollNotes: Record<string, RollNotePF2e[]>, selecto
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithChildren): HTMLElementTagNameMap[K];
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithInnerHTML): HTMLElementTagNameMap[K];
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithNeither): HTMLElementTagNameMap[K];
+declare function signedInteger(value: number, { emptyStringZero, zeroIsNegative }?: {
+    emptyStringZero?: boolean | undefined;
+    zeroIsNegative?: boolean | undefined;
+}): string;
 interface CreateHTMLElementOptionsWithChildren extends CreateHTMLElementOptions {
     children: (HTMLElement | string)[];
     innerHTML?: never;
@@ -35,4 +39,4 @@ interface CreateHTMLElementOptions {
     children?: (HTMLElement | string)[];
     innerHTML?: string;
 }
-export { createHTMLElement, ErrorPF2e, extractNotes, getActionGlyph, htmlClosest, htmlQuery, localizer, objectHasKey, ordinalString, setHasElement, traitSlugToObject, tupleHasValue, };
+export { createHTMLElement, ErrorPF2e, extractNotes, getActionGlyph, htmlClosest, htmlQuery, localizer, objectHasKey, ordinalString, setHasElement, signedInteger, traitSlugToObject, tupleHasValue, };

@@ -148,8 +148,23 @@ declare global {
         resources: CreatureResourcesSource;
     }
 
+    interface RecallKnowledgeDC {
+        dc: number;
+        progression: number[];
+        start: DCAdjustment;
+    }
+
+    interface CreatureIdentificationData {
+        skills: SkillLongForm[];
+        standard: RecallKnowledgeDC;
+        lore: [RecallKnowledgeDC, RecallKnowledgeDC];
+    }
+
     class NPCPF2e extends CreaturePF2e {
         get abilities(): Abilities;
+        get identificationDCs(): CreatureIdentificationData;
+
+        applyAdjustment(adjustment: "elite" | "weak" | null): Promise<void>;
     }
 
     interface NPCPF2e {

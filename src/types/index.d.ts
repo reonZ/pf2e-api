@@ -4,6 +4,7 @@ export * from "./modules";
 
 export * from "./actions";
 export * from "./browser";
+export * from "./canvas";
 export * from "./chat";
 export * from "./check";
 export * from "./collection";
@@ -11,6 +12,7 @@ export * from "./combat";
 export * from "./config";
 export * from "./damage";
 export * from "./data";
+export * from "./dc";
 export * from "./effects-panel";
 export * from "./game";
 export * from "./gsap";

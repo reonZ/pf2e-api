@@ -5,6 +5,7 @@ export * from "./chat";
 export * from "./classes";
 export * from "./classes";
 export * from "./data";
+export * from "./dc";
 export * from "./effect";
 export * from "./item";
 export * from "./notes";

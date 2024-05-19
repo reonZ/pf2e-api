@@ -177,7 +177,7 @@ async function consumeItem(event: Event, item: ConsumablePF2e) {
         },
     };
     const speaker = ChatMessage.getSpeaker({ actor });
-    const template = (await item.toMessage(event, { create: false })).content;
+    const template = (await item.toMessage(event, { create: false }))!.content;
     const contentHTML = createHTMLFromString(template);
 
     contentHTML.querySelector("button[data-action='consume']")?.remove();

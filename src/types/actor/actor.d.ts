@@ -94,7 +94,7 @@ declare global {
     };
 
     interface ActorInstances {
-        army: ArmorPF2e;
+        army: ArmyPF2e;
         character: CharacterPF2e;
         creature: CreaturePF2e;
         familiar: FamiliarPF2e;
@@ -143,6 +143,7 @@ declare global {
         inventory: ActorInventory<this>;
         rules: RuleElementPF2e[];
         conditions: ActorConditions<this>;
+        armorClass: StatisticDifficultyClass<ArmorStatistic> | null;
 
         get level(): number;
         get sourceId(): string | null;
@@ -157,6 +158,18 @@ declare global {
         get primaryUpdater(): UserPF2e | null;
         get token(): TokenDocumentPF2e | null;
         get isDead(): boolean;
+
+        increaseCondition(
+            conditionSlug: ConditionSlug,
+            options?: { max?: number; value?: number | null }
+        ): Promise<ConditionPF2e<this> | null>;
+
+        decreaseCondition(
+            conditionSlug: ConditionKey,
+            options?: { forceRemove: boolean }
+        ): Promise<void>;
+
+        toggleCondition(conditionSlug: ConditionSlug): Promise<void>;
 
         getSelfRollOptions(prefix?: "self" | "target" | "origin"): string[];
         getContextualClone(

@@ -12,28 +12,24 @@ declare global {
     interface IWRSource<TType extends IWRType = IWRType> {
         type: TType;
         exceptions?: IWRException<TType>[];
+
+        get label(): string;
+        get typeLabel(): string;
     }
 
     type ImmunitySource = IWRSource<ImmunityType>;
 
     abstract class IWR<TType extends IWRType> {}
 
-    class Immunity extends IWR<ImmunityType> implements ImmunitySource {
-        type: string;
-        exceptions?: IWRException<string>[] | undefined;
-    }
+    interface Immunity extends IWR<ImmunityType>, ImmunitySource {}
 
-    class Weakness extends IWR<WeaknessType> implements WeaknessSource {
+    interface Weakness extends IWR<WeaknessType>, WeaknessSource {
         value: number;
-        type: string;
-        exceptions?: IWRException<string>[] | undefined;
     }
 
-    class Resistance extends IWR<ResistanceType> implements ResistanceSource {
+    interface Resistance extends IWR<ResistanceType>, ResistanceSource {
         value: number;
         doubleVs?: IWRException<string>[] | undefined;
-        type: string;
-        exceptions?: IWRException<string>[] | undefined;
     }
 }
 

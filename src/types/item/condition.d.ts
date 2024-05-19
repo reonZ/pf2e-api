@@ -1,6 +1,12 @@
 declare global {
     type ConditionSource = BaseItemSourcePF2e<"condition", ConditionSystemSource>;
 
+    type DetectionConditionType = Extract<
+        ConditionSlug,
+        "hidden" | "observed" | "undetected" | "unnoticed"
+    >;
+    type ConditionKey = ConditionSlug | `persistent-damage-${string}`;
+
     type ConditionSlug =
         | "blinded"
         | "broken"

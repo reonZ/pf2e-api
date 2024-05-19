@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tupleHasValue = exports.traitSlugToObject = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlQuery = exports.htmlClosest = exports.getActionGlyph = exports.extractNotes = exports.ErrorPF2e = exports.createHTMLElement = void 0;
+exports.tupleHasValue = exports.traitSlugToObject = exports.signedInteger = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlQuery = exports.htmlClosest = exports.getActionGlyph = exports.extractNotes = exports.ErrorPF2e = exports.createHTMLElement = void 0;
 const foundry_api_1 = require("foundry-api");
 function ErrorPF2e(message) {
     return Error(`PF2e System | ${message}`);
@@ -99,3 +99,15 @@ function createHTMLElement(nodeName, { classes = [], dataset = {}, children = []
     return element;
 }
 exports.createHTMLElement = createHTMLElement;
+let intlNumberFormat;
+function signedInteger(value, { emptyStringZero = false, zeroIsNegative = false } = {}) {
+    if (value === 0 && emptyStringZero)
+        return "";
+    const nf = (intlNumberFormat ??= new Intl.NumberFormat(game.i18n.lang, {
+        maximumFractionDigits: 0,
+        signDisplay: "always",
+    }));
+    const maybeNegativeZero = zeroIsNegative && value === 0 ? -0 : value;
+    return nf.format(maybeNegativeZero);
+}
+exports.signedInteger = signedInteger;

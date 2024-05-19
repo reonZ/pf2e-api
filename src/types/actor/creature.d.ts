@@ -49,17 +49,20 @@ declare global {
         icon: ImageFilePath;
     }
 
-    interface LabeledSpeed extends Omit<LabeledNumber, "exceptions"> {
+    interface LabeledSpeed extends Omit<StatisticModifier, "label"> {
         type: Exclude<MovementType, "land">;
-        source?: string;
-        total?: number;
+        label: string;
+        total: number;
+    }
+
+    interface OtherSpeed extends LabeledSpeed {
         derivedFromLand?: boolean;
     }
 
-    interface CreatureSpeeds extends StatisticModifier {
+    interface CreatureSpeeds extends Omit<LabeledSpeed, "type"> {
+        type: "land";
         value: number;
-        otherSpeeds: LabeledSpeed[];
-        total: number;
+        otherSpeeds: OtherSpeed[];
     }
 
     interface CreatureAttributes extends ActorAttributes {
@@ -187,6 +190,7 @@ declare global {
         get traits(): Set<CreatureTrait>;
         get hitPoints(): HitPointsSummary;
         get wornArmor(): ArmorPF2e<this> | null;
+        get heldShield(): ShieldPF2e<this> | null;
 
         changeCarryType(
             item: PhysicalItemPF2e<CreaturePF2e>,

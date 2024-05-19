@@ -95,7 +95,9 @@ declare global {
 
     class ArmorStatistic<TActor extends ActorPF2e = ActorPF2e> extends Statistic<TActor> {}
 
-    class ArmyPF2e extends ActorPF2e {}
+    class ArmyPF2e extends ActorPF2e {
+        scouting: Statistic;
+    }
 
     interface ArmyPF2e {
         readonly _source: ArmySource;
