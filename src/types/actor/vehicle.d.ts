@@ -32,7 +32,7 @@ declare global {
         passengers: string;
         pilotingCheck: string;
         AC: number;
-        speed: number;
+        speed: string;
         publication: PublicationData;
     }
 

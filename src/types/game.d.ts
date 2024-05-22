@@ -5,6 +5,10 @@ declare global {
                 sluggify(text: string, options?: { camel?: "bactrian" | "dromedary" }): string;
             };
 
+            actions: Collection<Action> & {
+                raiseAShield(options: ActionDefaultOptions): Promise<void>;
+            };
+
             compendiumBrowser: CompendiumBrowser;
             effectPanel: EffectsPanel;
 

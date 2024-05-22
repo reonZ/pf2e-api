@@ -1,3 +1,4 @@
+/// <reference types="jquery" />
 import { RollNotePF2e } from "./notes";
 declare function ErrorPF2e(message: string): Error;
 declare function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O;
@@ -17,10 +18,17 @@ declare function extractNotes(rollNotes: Record<string, RollNotePF2e[]>, selecto
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithChildren): HTMLElementTagNameMap[K];
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithInnerHTML): HTMLElementTagNameMap[K];
 declare function createHTMLElement<K extends keyof HTMLElementTagNameMap>(nodeName: K, options?: CreateHTMLElementOptionsWithNeither): HTMLElementTagNameMap[K];
+declare function eventToRollParams(event: Maybe<JQuery.TriggeredEvent | Event>, rollType: {
+    type: "check" | "damage";
+}): ParamsFromEvent;
 declare function signedInteger(value: number, { emptyStringZero, zeroIsNegative }?: {
     emptyStringZero?: boolean | undefined;
     zeroIsNegative?: boolean | undefined;
 }): string;
+type ParamsFromEvent = {
+    skipDialog: boolean;
+    rollMode?: RollMode | "roll";
+};
 interface CreateHTMLElementOptionsWithChildren extends CreateHTMLElementOptions {
     children: (HTMLElement | string)[];
     innerHTML?: never;
@@ -39,4 +47,4 @@ interface CreateHTMLElementOptions {
     children?: (HTMLElement | string)[];
     innerHTML?: string;
 }
-export { createHTMLElement, ErrorPF2e, extractNotes, getActionGlyph, htmlClosest, htmlQuery, localizer, objectHasKey, ordinalString, setHasElement, signedInteger, traitSlugToObject, tupleHasValue, };
+export { createHTMLElement, ErrorPF2e, eventToRollParams, extractNotes, getActionGlyph, htmlClosest, htmlQuery, localizer, objectHasKey, ordinalString, setHasElement, signedInteger, traitSlugToObject, tupleHasValue, };

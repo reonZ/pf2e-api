@@ -146,6 +146,28 @@ function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
     return element;
 }
 
+function isRelevantEvent(
+    event: Maybe<JQuery.TriggeredEvent | Event>
+): event is MouseEvent | TouchEvent | KeyboardEvent | WheelEvent | JQuery.TriggeredEvent {
+    return !!event && "ctrlKey" in event && "metaKey" in event && "shiftKey" in event;
+}
+
+function eventToRollParams(
+    event: Maybe<JQuery.TriggeredEvent | Event>,
+    rollType: { type: "check" | "damage" }
+): ParamsFromEvent {
+    const key = rollType.type === "check" ? "showCheckDialogs" : "showDamageDialogs";
+    const skipDefault = !(game.user as UserPF2e).settings[key];
+    if (!isRelevantEvent(event)) return { skipDialog: skipDefault };
+
+    const params: ParamsFromEvent = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+    if (event.ctrlKey || event.metaKey) {
+        params.rollMode = game.user.isGM ? "gmroll" : "blindroll";
+    }
+
+    return params;
+}
+
 let intlNumberFormat: Intl.NumberFormat;
 function signedInteger(
     value: number,
@@ -160,6 +182,8 @@ function signedInteger(
 
     return nf.format(maybeNegativeZero);
 }
+
+type ParamsFromEvent = { skipDialog: boolean; rollMode?: RollMode | "roll" };
 
 interface CreateHTMLElementOptionsWithChildren extends CreateHTMLElementOptions {
     children: (HTMLElement | string)[];
@@ -186,6 +210,7 @@ interface CreateHTMLElementOptions {
 export {
     createHTMLElement,
     ErrorPF2e,
+    eventToRollParams,
     extractNotes,
     getActionGlyph,
     htmlClosest,

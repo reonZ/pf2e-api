@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tupleHasValue = exports.traitSlugToObject = exports.signedInteger = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlQuery = exports.htmlClosest = exports.getActionGlyph = exports.extractNotes = exports.ErrorPF2e = exports.createHTMLElement = void 0;
+exports.tupleHasValue = exports.traitSlugToObject = exports.signedInteger = exports.setHasElement = exports.ordinalString = exports.objectHasKey = exports.localizer = exports.htmlQuery = exports.htmlClosest = exports.getActionGlyph = exports.extractNotes = exports.eventToRollParams = exports.ErrorPF2e = exports.createHTMLElement = void 0;
 const foundry_api_1 = require("foundry-api");
 function ErrorPF2e(message) {
     return Error(`PF2e System | ${message}`);
@@ -99,6 +99,21 @@ function createHTMLElement(nodeName, { classes = [], dataset = {}, children = []
     return element;
 }
 exports.createHTMLElement = createHTMLElement;
+function isRelevantEvent(event) {
+    return !!event && "ctrlKey" in event && "metaKey" in event && "shiftKey" in event;
+}
+function eventToRollParams(event, rollType) {
+    const key = rollType.type === "check" ? "showCheckDialogs" : "showDamageDialogs";
+    const skipDefault = !game.user.settings[key];
+    if (!isRelevantEvent(event))
+        return { skipDialog: skipDefault };
+    const params = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+    if (event.ctrlKey || event.metaKey) {
+        params.rollMode = game.user.isGM ? "gmroll" : "blindroll";
+    }
+    return params;
+}
+exports.eventToRollParams = eventToRollParams;
 let intlNumberFormat;
 function signedInteger(value, { emptyStringZero = false, zeroIsNegative = false } = {}) {
     if (value === 0 && emptyStringZero)
