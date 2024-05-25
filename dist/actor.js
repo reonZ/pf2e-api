@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transferItemToActor = exports.resetActors = void 0;
+exports.transferItemToActor = exports.resetActors = exports.getDispositionColor = void 0;
 const foundry_api_1 = require("foundry-api");
 const utils_1 = require("./utils");
 async function transferItemToActor(targetActor, item, quantity, containerId, newStack = false) {
@@ -64,3 +64,17 @@ async function resetActors(actors, options = {}) {
     }
 }
 exports.resetActors = resetActors;
+function getDispositionColor(actor) {
+    const alliance = actor.alliance;
+    const colorValue = !actor
+        ? CONFIG.Canvas.dispositionColors.NEUTRAL
+        : alliance === "party"
+            ? actor.hasPlayerOwner
+                ? CONFIG.Canvas.dispositionColors.PARTY
+                : CONFIG.Canvas.dispositionColors.FRIENDLY
+            : alliance === "opposition"
+                ? CONFIG.Canvas.dispositionColors.HOSTILE
+                : CONFIG.Canvas.dispositionColors.NEUTRAL;
+    return new Color(colorValue);
+}
+exports.getDispositionColor = getDispositionColor;

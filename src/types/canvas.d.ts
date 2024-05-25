@@ -1,5 +1,3 @@
-declare global {
-    class TokenLayerPF2e extends TokenLayer {}
-}
+declare global {}
 
 export type {};

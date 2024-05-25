@@ -67,6 +67,8 @@ declare global {
 
     interface TokenPF2e {
         document: TokenDocumentPF2e;
+
+        get combatant(): CombatantPF2e | null;
     }
 }
 
