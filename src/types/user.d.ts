@@ -10,7 +10,7 @@ declare global {
     }
 
     class UserPF2e extends User {
-        targets: Set<TokenPF2e>;
+        targets: Set<TokenPF2e> & { ids: string[] };
 
         get character(): ActorPF2e | null;
         get settings(): Readonly<UserSettingsPF2e>;

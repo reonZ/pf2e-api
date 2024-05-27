@@ -186,6 +186,7 @@ declare global {
         spellcasting: ActorSpellcasting<this>;
         parties: Set<PartyPF2e>;
         saves: Record<SaveType, Statistic>;
+        perception: PerceptionStatistic;
 
         get traits(): Set<CreatureTrait>;
         get hitPoints(): HitPointsSummary;

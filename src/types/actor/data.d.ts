@@ -11,6 +11,15 @@ declare global {
         description: string | null;
     }
 
+    class Sense {
+        get label(): string | null;
+    }
+
+    class PerceptionStatistic<TActor extends ActorPF2e = ActorPF2e> extends Statistic<TActor> {
+        senses: Collection<Sense>;
+        hasVision: boolean;
+    }
+
     type RollFunction<T extends RollParameters = RollParameters> = (
         params: T
     ) => Promise<Rolled<CheckRoll> | null | string | void>;

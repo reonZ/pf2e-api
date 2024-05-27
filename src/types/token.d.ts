@@ -54,11 +54,15 @@ declare global {
         get actor(): TActor | null;
         get scene(): Scene;
         get playersCanSeeName(): boolean;
+        get combatant(): CombatantPF2e | null;
+        get object(): TokenPF2e | null;
 
         simulateUpdate(actorUpdates?: Record<string, unknown>): void;
     }
 
     class TokenPF2e<TActor extends ActorPF2e = ActorPF2e> extends Token {
+        targeted: Set<UserPF2e>;
+
         get actor(): TActor | null;
         get isAnimating(): boolean;
 

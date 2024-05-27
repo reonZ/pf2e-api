@@ -144,6 +144,7 @@ declare global {
         rules: RuleElementPF2e[];
         conditions: ActorConditions<this>;
         armorClass: StatisticDifficultyClass<ArmorStatistic> | null;
+        perception?: PerceptionStatistic;
 
         get level(): number;
         get sourceId(): string | null;
