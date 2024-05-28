@@ -25,6 +25,30 @@ declare global {
                 value?: number | undefined
             ) => Promise<FoundryDocument<any>> | undefined;
             openDailiesInterface: (actor: CharacterPF2e) => Promise<void>;
+            registerCustomDailies: (dailies: object[]) => void;
+            dailyHelpers: {
+                createComboSkillDaily: (
+                    key: string,
+                    uuid: string,
+                    {
+                        rank,
+                        removeRules,
+                    }?: {
+                        rank?: OneToFour | undefined;
+                        removeRules?: boolean | undefined;
+                    }
+                ) => object;
+                createLoreSkillDaily: (key: string, uuid: string) => object;
+                createLanguageDaily: (key: string, uuid: string) => object;
+                createResistanceDaily: (
+                    key: string,
+                    uuid: string,
+                    resistances: string[],
+                    resistance: string | number | "half" | "level",
+                    isRandom?: boolean
+                ) => object;
+                createScrollChainDaily: (key: string, uuids: [string, string, string]) => object;
+            };
         };
     }
 }
