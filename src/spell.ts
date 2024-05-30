@@ -184,7 +184,7 @@ async function getSummarizedSpellsDataForRender(
     const focusPool = actor.system.resources?.focus ?? { value: 0, max: 0 };
     const pf2eDailies = getActiveModule<PF2eDailiesModule>("pf2e-dailies");
 
-    const spells: SummarizedSpellData[][] = [];
+    const spells: SummarizedSpell[][] = [];
     const labels: string[] = [];
 
     let hasFocusCantrip = false;
@@ -213,7 +213,7 @@ async function getSummarizedSpellsDataForRender(
             if (!group.active.length || group.uses?.max === 0) continue;
 
             const groupNumber = spellSlotGroupIdToNumber(group.id);
-            const slotSpells: SummarizedSpellData[] = [];
+            const slotSpells: SummarizedSpell[] = [];
             const isCantrip = group.id === "cantrips";
             const isBroken = !isCantrip && isCharges && !pf2eDailies?.active;
             const groupUses =
@@ -322,10 +322,9 @@ async function getSummarizedSpellsDataForRender(
     }
 
     if (spells.length) {
-        const orderSort = (a: SummarizedSpellData, b: SummarizedSpellData) =>
+        const orderSort = (a: SummarizedSpell, b: SummarizedSpell) =>
             a.order === b.order ? localeCompare(a.name, b.name) : a.order - b.order;
-        const nameSort = (a: SummarizedSpellData, b: SummarizedSpellData) =>
-            localeCompare(a.name, b.name);
+        const nameSort = (a: SummarizedSpell, b: SummarizedSpell) => localeCompare(a.name, b.name);
         const sort = sortByType ? orderSort : nameSort;
 
         for (let i = 0; i < spells.length; i++) {
@@ -347,7 +346,19 @@ async function getSummarizedSpellsDataForRender(
     };
 }
 
-type SummarizedSpellData = {
+type SummarizedSpellsData = {
+    labels: string[];
+    spells: SummarizedSpell[][];
+    focusPool: {
+        value: number;
+        max: number;
+        cap?: number;
+    };
+    isOwner: boolean;
+    hasFocusCantrip: boolean;
+};
+
+type SummarizedSpell = {
     itemId: string;
     entryId: string;
     entryDc: number | undefined;
@@ -377,6 +388,7 @@ type SummarizedSpellData = {
     uses: (ValueAndMax & { input: string; itemId: string }) | undefined;
 };
 
+export type { SummarizedSpell, SummarizedSpellsData };
 export {
     EFFECT_AREA_SHAPES,
     MAGIC_TRADITIONS,

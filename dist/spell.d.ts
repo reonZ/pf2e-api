@@ -22,7 +22,7 @@ declare function spellSlotGroupIdToNumber(groupId: Maybe<string | number>): Zero
 declare function warnInvalidDrop(warning: DropWarningType, { spell, groupId }: WarnInvalidDropParams): void;
 declare function getSummarizedSpellsDataForRender(actor: CreaturePF2e, sortByType: boolean, localize: (str: string) => string, entries?: SpellcastingSheetData[]): Promise<{
     labels: string[];
-    spells: SummarizedSpellData[][];
+    spells: SummarizedSpell[][];
     focusPool: {
         value: number;
         max: number;
@@ -34,7 +34,18 @@ declare function getSummarizedSpellsDataForRender(actor: CreaturePF2e, sortByTyp
     isOwner: boolean;
     hasFocusCantrip: boolean;
 }>;
-type SummarizedSpellData = {
+type SummarizedSpellsData = {
+    labels: string[];
+    spells: SummarizedSpell[][];
+    focusPool: {
+        value: number;
+        max: number;
+        cap?: number;
+    };
+    isOwner: boolean;
+    hasFocusCantrip: boolean;
+};
+type SummarizedSpell = {
     itemId: string;
     entryId: string;
     entryDc: number | undefined;
@@ -66,4 +77,5 @@ type SummarizedSpellData = {
         itemId: string;
     }) | undefined;
 };
+export type { SummarizedSpell, SummarizedSpellsData };
 export { EFFECT_AREA_SHAPES, MAGIC_TRADITIONS, coerceToSpellGroupId, createCounteractStatistic, getActorMaxRank, getHighestSpellcastingStatistic, getHighestSyntheticStatistic, getRankLabel, getSummarizedSpellsDataForRender, spellSlotGroupIdToNumber, upgradeStatisticRank, warnInvalidDrop, };
