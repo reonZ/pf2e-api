@@ -137,7 +137,20 @@ declare global {
         // speeds: SpeedSheetData[];
     }
 
+    class ItemSummaryRenderer<
+        TActor extends ActorPF2e,
+        TSheet extends Application & { get actor(): TActor }
+    > {
+        renderItemSummary(
+            container: HTMLElement,
+            item: ItemPF2e<ActorPF2e>,
+            chatData: RawItemChatData
+        ): Promise<void>;
+    }
+
     class ActorSheetPF2e<TActor extends ActorPF2e = ActorPF2e> extends ActorSheet<TActor> {
+        itemRenderer: ItemSummaryRenderer<TActor, ActorSheetPF2e<TActor>>;
+
         _updateObject(event: SubmitEvent, formData: Record<string, unknown>): Promise<void>;
     }
 

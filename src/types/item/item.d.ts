@@ -137,6 +137,26 @@ declare global {
         | SpellSource
         | SpellcastingEntrySource;
 
+    interface EnrichmentOptionsPF2e extends EnrichmentOptions {
+        rollData?: RollDataPF2e;
+        processVisibility?: boolean;
+    }
+
+    interface TraitChatData {
+        value: string;
+        label: string;
+        description?: string;
+        mystified?: boolean;
+        excluded?: boolean;
+    }
+
+    interface RawItemChatData {
+        [key: string]: unknown;
+        description: ItemDescriptionData;
+        traits?: TraitChatData[];
+        properties?: string[];
+    }
+
     class ItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends Item<TParent> {
         type: ItemType;
 
@@ -179,6 +199,11 @@ declare global {
                 data?: Record<string, unknown>;
             }
         ): Promise<ChatMessagePF2e | undefined>;
+
+        getChatData(
+            htmlOptions?: EnrichmentOptionsPF2e,
+            _rollOptions?: Record<string, unknown>
+        ): Promise<RawItemChatData>;
     }
 
     interface ItemPF2e {

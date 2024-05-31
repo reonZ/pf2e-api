@@ -58,6 +58,11 @@ declare global {
             groupId: SpellSlotGroupId,
             slotIndex: number
         ): Promise<this | null>;
+        setSlotExpendedState(
+            groupId: SpellSlotGroupId,
+            slotIndex: number,
+            value: boolean
+        ): Promise<this | null>;
     }
 
     class ActorConditions<TActor extends ActorPF2e> extends DelegatedCollection<

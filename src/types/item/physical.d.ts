@@ -223,6 +223,8 @@ declare global {
     }
 
     class PhysicalItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {
+        subitems: Collection<PhysicalItemPF2e<TParent>>;
+
         get quantity(): number;
         get carryType(): ItemCarryType;
         get isInvested(): boolean | null;

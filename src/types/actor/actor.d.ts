@@ -159,6 +159,7 @@ declare global {
         get primaryUpdater(): UserPF2e | null;
         get token(): TokenDocumentPF2e | null;
         get isDead(): boolean;
+        get sheet(): ActorSheetPF2e;
 
         increaseCondition(
             conditionSlug: ConditionSlug,
@@ -171,6 +172,22 @@ declare global {
         ): Promise<void>;
 
         toggleCondition(conditionSlug: ConditionSlug): Promise<void>;
+
+        toggleRollOption(domain: string, option: string, value?: boolean): Promise<boolean | null>;
+        toggleRollOption(
+            domain: string,
+            option: string,
+            itemId?: string | null,
+            value?: boolean,
+            suboption?: string | null
+        ): Promise<boolean | null>;
+        toggleRollOption(
+            domain: string,
+            option: string,
+            itemId?: string | boolean | null,
+            value?: boolean,
+            suboption?: string | null
+        ): Promise<boolean | null>;
 
         getSelfRollOptions(prefix?: "self" | "target" | "origin"): string[];
         getContextualClone(
@@ -243,7 +260,7 @@ declare global {
     interface ActorPF2e {
         readonly _source: ActorSourcePF2e;
         system: ActorSystemData;
-        items: EmbeddedCollection<ItemPF2e<this>>;
+        items: EmbeddedCollection<ItemPF2e>;
         flags: ActorFlagsPF2e;
     }
 }
