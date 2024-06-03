@@ -1,8 +1,17 @@
 import { createHTMLFromString } from "foundry-api";
 import { getDamageRollClass } from "./classes";
-import { getActionGlyph, traitSlugToObject } from "./utils";
+import {
+    ErrorPF2e,
+    createHTMLElement,
+    getActionGlyph,
+    localizer,
+    traitSlugToObject,
+} from "./utils";
+
+const ITEM_CARRY_TYPES = ["attached", "dropped", "held", "stowed", "worn"] as const;
 
 const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
+
 const BANDS_OF_FORCE_SLUGS = [
     "bands-of-force",
     "bands-of-force-greater",
@@ -122,7 +131,7 @@ async function changeCarryType(
 
     const token = actor.getActiveTokens(false, true).shift();
 
-    await ChatMessage.implementation.create({
+    await getDocumentClass("ChatMessage").create({
         content,
         speaker: ChatMessage.getSpeaker({ actor, token }),
         flavor,
@@ -165,8 +174,8 @@ async function consumeItem(event: Event, item: ConsumablePF2e) {
     }
 
     const actor = item.actor;
-    const multiUse = uses.max > 1;
-    const key = uses.value === 1 && multiUse ? "UseExhausted" : multiUse ? "UseMulti" : "UseSingle";
+    // const multiUse = uses.max > 1;
+    // const key = uses.value === 1 && multiUse ? "UseExhausted" : multiUse ? "UseMulti" : "UseSingle";
     const flags = {
         pf2e: {
             origin: {
@@ -218,7 +227,46 @@ async function consumeItem(event: Event, item: ConsumablePF2e) {
     }
 }
 
-class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
+async function detachSubitem(subitem: PhysicalItemPF2e, skipConfirm: boolean): Promise<void> {
+    const parentItem = subitem.parentItem;
+    if (!parentItem) throw ErrorPF2e("Subitem has no parent item");
+
+    const localize = localizer("PF2E.Item.Physical.Attach.Detach");
+    const confirmed =
+        skipConfirm ||
+        (await Dialog.confirm({
+            title: localize("Label"),
+            content: createHTMLElement("p", {
+                children: [localize("Prompt", { attachable: subitem.name })],
+            }).outerHTML,
+        }));
+
+    if (confirmed) {
+        const deletePromise = subitem.delete();
+        const createPromise = (async (): Promise<unknown> => {
+            // Find a stack match, cloning the subitem as worn so the search won't fail due to it being equipped
+            const stack = subitem.isOfType("consumable")
+                ? parentItem.actor?.inventory.findStackableItem(
+                      subitem.clone({ "system.equipped.carryType": "worn" })
+                  )
+                : null;
+            const keepId = !!parentItem.actor && !parentItem.actor.items.has(subitem.id);
+            return (
+                stack?.update({ "system.quantity": stack.quantity + 1 }) ??
+                getDocumentClass("Item").create(
+                    foundry.utils.mergeObject(subitem.toObject(), {
+                        "system.containerId": parentItem.system.containerId,
+                    }),
+                    { parent: parentItem.actor, keepId }
+                )
+            );
+        })();
+
+        await Promise.all([deletePromise, createPromise]);
+    }
+}
+
+class MoveLootPopup extends FormApplication<{}, MoveLootOptions> {
     onSubmitCallback: MoveLootCallback;
 
     constructor(object: ActorPF2e, options: Partial<MoveLootOptions>, callback: MoveLootCallback) {
@@ -245,7 +293,7 @@ class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
         };
     }
 
-    static override get defaultOptions(): MoveLootOptions {
+    static get defaultOptions(): MoveLootOptions {
         return {
             ...super.defaultOptions,
             id: "MoveLootPopup",
@@ -263,7 +311,7 @@ class MoveLootPopup extends FormApplication<{}, {}, MoveLootOptions> {
         };
     }
 
-    override async _updateObject(
+    async _updateObject(
         _event: DragEvent,
         formData: Record<string, unknown> & MoveLootFormData
     ): Promise<void> {
@@ -304,10 +352,12 @@ type BandsOfForceSlug = (typeof BANDS_OF_FORCE_SLUGS)[number];
 export {
     BANDS_OF_FORCE_SLUGS,
     HANDWRAPS_SLUG,
+    ITEM_CARRY_TYPES,
     MoveLootPopup,
     calculateItemPrice,
     changeCarryType,
     consumeItem,
+    detachSubitem,
     getAnnotationLabel,
     getCarryTypeActionData,
     getEquippedHandwraps,

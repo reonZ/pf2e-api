@@ -69,7 +69,7 @@ type SummarizedSpell = {
     isPrepared: boolean | undefined;
     isSpontaneous: boolean | undefined;
     isFlexible: boolean | undefined;
-    consumable: ConsumablePF2e<CharacterPF2e> | undefined;
+    consumable: ConsumablePF2e | undefined;
     range: string;
     rank: ZeroToTen;
     uses: (ValueAndMax & {

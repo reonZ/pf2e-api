@@ -7,6 +7,7 @@ export * from "./classes";
 export * from "./data";
 export * from "./dc";
 export * from "./effect";
+export * from "./identify";
 export * from "./item";
 export * from "./notes";
 export * from "./rules";

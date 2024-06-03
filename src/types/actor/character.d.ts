@@ -355,6 +355,7 @@ declare global {
         get abilities(): CharacterAbilities;
         get attributes(): CharacterAttributes;
 
+        toggleInvested(itemId: string): Promise<boolean>;
         getCraftingEntries(formulas?: CraftingFormula[]): Promise<CraftingEntry[]>;
     }
 

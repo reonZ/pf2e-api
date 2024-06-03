@@ -1,5 +1,5 @@
 declare function createTradeContent(message: string, img: string): Promise<string>;
-declare function createTradeMessage(subtitle: string, message: string, actor: ActorPF2e, item: ItemPF2e, senderId?: string): Promise<ChatMessage>;
+declare function createTradeMessage(subtitle: string, message: string, actor: ActorPF2e, item: ItemPF2e, senderId?: string): Promise<ChatMessagePF2e | undefined>;
 declare function applyDamageFromMessage({ message, multiplier, addend, promptModifier, rollIndex, tokens, onDamageApplied, }: ApplyDamageFromMessageParams): Promise<void>;
 declare function toggleOffShieldBlock(messageId: string): void;
 declare function onClickShieldBlock(shieldButton: HTMLButtonElement, messageEl: HTMLLIElement, token?: TokenDocumentPF2e): void;

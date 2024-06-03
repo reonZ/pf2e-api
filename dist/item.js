@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasFreePropertySlot = exports.getEquippedHandwraps = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.consumeItem = exports.changeCarryType = exports.calculateItemPrice = exports.MoveLootPopup = exports.HANDWRAPS_SLUG = exports.BANDS_OF_FORCE_SLUGS = void 0;
+exports.hasFreePropertySlot = exports.getEquippedHandwraps = exports.getCarryTypeActionData = exports.getAnnotationLabel = exports.detachSubitem = exports.consumeItem = exports.changeCarryType = exports.calculateItemPrice = exports.MoveLootPopup = exports.ITEM_CARRY_TYPES = exports.HANDWRAPS_SLUG = exports.BANDS_OF_FORCE_SLUGS = void 0;
 const foundry_api_1 = require("foundry-api");
 const classes_1 = require("./classes");
 const utils_1 = require("./utils");
+const ITEM_CARRY_TYPES = ["attached", "dropped", "held", "stowed", "worn"];
+exports.ITEM_CARRY_TYPES = ITEM_CARRY_TYPES;
 const HANDWRAPS_SLUG = "handwraps-of-mighty-blows";
 exports.HANDWRAPS_SLUG = HANDWRAPS_SLUG;
 const BANDS_OF_FORCE_SLUGS = [
@@ -93,7 +95,7 @@ async function changeCarryType(actor, item, handsHeld, annotation, action = "int
         }),
     });
     const token = actor.getActiveTokens(false, true).shift();
-    await ChatMessage.implementation.create({
+    await getDocumentClass("ChatMessage").create({
         content,
         speaker: ChatMessage.getSpeaker({ actor, token }),
         flavor,
@@ -182,6 +184,35 @@ async function consumeItem(event, item) {
     }
 }
 exports.consumeItem = consumeItem;
+async function detachSubitem(subitem, skipConfirm) {
+    const parentItem = subitem.parentItem;
+    if (!parentItem)
+        throw (0, utils_1.ErrorPF2e)("Subitem has no parent item");
+    const localize = (0, utils_1.localizer)("PF2E.Item.Physical.Attach.Detach");
+    const confirmed = skipConfirm ||
+        (await Dialog.confirm({
+            title: localize("Label"),
+            content: (0, utils_1.createHTMLElement)("p", {
+                children: [localize("Prompt", { attachable: subitem.name })],
+            }).outerHTML,
+        }));
+    if (confirmed) {
+        const deletePromise = subitem.delete();
+        const createPromise = (async () => {
+            // Find a stack match, cloning the subitem as worn so the search won't fail due to it being equipped
+            const stack = subitem.isOfType("consumable")
+                ? parentItem.actor?.inventory.findStackableItem(subitem.clone({ "system.equipped.carryType": "worn" }))
+                : null;
+            const keepId = !!parentItem.actor && !parentItem.actor.items.has(subitem.id);
+            return (stack?.update({ "system.quantity": stack.quantity + 1 }) ??
+                getDocumentClass("Item").create(foundry.utils.mergeObject(subitem.toObject(), {
+                    "system.containerId": parentItem.system.containerId,
+                }), { parent: parentItem.actor, keepId }));
+        })();
+        await Promise.all([deletePromise, createPromise]);
+    }
+}
+exports.detachSubitem = detachSubitem;
 class MoveLootPopup extends FormApplication {
     onSubmitCallback;
     constructor(object, options, callback) {

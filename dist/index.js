@@ -23,6 +23,7 @@ __exportStar(require("./classes"), exports);
 __exportStar(require("./data"), exports);
 __exportStar(require("./dc"), exports);
 __exportStar(require("./effect"), exports);
+__exportStar(require("./identify"), exports);
 __exportStar(require("./item"), exports);
 __exportStar(require("./notes"), exports);
 __exportStar(require("./rules"), exports);

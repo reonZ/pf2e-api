@@ -17,8 +17,8 @@ async function createTradeMessage(subtitle, message, actor, item, senderId) {
 }
 exports.createTradeMessage = createTradeMessage;
 async function createManipulationMessage(subtitle, content, actor, senderId) {
-    return ChatMessage.implementation.create({
-        user: senderId ?? game.user.id,
+    return getDocumentClass("ChatMessage").create({
+        author: senderId ?? game.user.id,
         speaker: {
             alias: (0, foundry_api_1.getHighestName)(actor),
         },

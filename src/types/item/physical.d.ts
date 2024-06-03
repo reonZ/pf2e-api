@@ -223,6 +223,7 @@ declare global {
     }
 
     class PhysicalItemPF2e<TParent extends ActorPF2e = ActorPF2e> extends ItemPF2e<TParent> {
+        parentItem: PhysicalItemPF2e | null;
         subitems: Collection<PhysicalItemPF2e<TParent>>;
 
         get quantity(): number;
@@ -247,6 +248,8 @@ declare global {
         get hardness(): number;
         get level(): number;
         get rarity(): Rarity;
+
+        setIdentificationStatus(status: IdentificationStatus): Promise<void>;
     }
 
     interface PhysicalItemPF2e {

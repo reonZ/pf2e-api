@@ -4,6 +4,11 @@ declare global {
     type PositiveDCAdjustment = "normal" | "hard" | "very-hard" | "incredibly-hard";
 
     type DCAdjustment = NegativeDCAdjustment | PositiveDCAdjustment;
+
+    interface DCOptions {
+        pwol?: boolean;
+        rarity?: Rarity;
+    }
 }
 
 export type {};

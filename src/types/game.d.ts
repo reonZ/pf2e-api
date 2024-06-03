@@ -7,6 +7,7 @@ declare global {
 
             actions: Collection<Action> & {
                 raiseAShield(options: ActionDefaultOptions): Promise<void>;
+                repair(options: ActionDefaultOptions & { item: PhysicalItemPF2e }): Promise<void>;
             };
 
             compendiumBrowser: CompendiumBrowser;

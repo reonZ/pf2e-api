@@ -9,12 +9,12 @@ declare global {
         get size(): number;
         get contents(): V[];
 
-        get<T extends V = V>(key: Maybe<string>, { strict }: { strict: true }): T;
-        get<T extends V = V>(key: string, options?: CollectionGetOptions): T | undefined;
+        get(key: Maybe<string>, options: { strict: true }): V;
+        get(key: string, options?: CollectionGetOptions): V | undefined;
         get(key: string, options?: CollectionGetOptions): V | undefined;
 
-        getName<T extends V = V>(name: Maybe<string>, { strict }: { strict: true }): T;
-        getName<T extends V = V>(name: string, options?: CollectionGetOptions): T | undefined;
+        getName(name: Maybe<string>, options: { strict: true }): V;
+        getName(name: string, options?: CollectionGetOptions): V | undefined;
         getName(name: string, options?: CollectionGetOptions): V | undefined;
 
         set(key: string, value: V): this;

@@ -152,6 +152,12 @@ declare global {
         itemRenderer: ItemSummaryRenderer<TActor, ActorSheetPF2e<TActor>>;
 
         _updateObject(event: SubmitEvent, formData: Record<string, unknown>): Promise<void>;
+
+        prepareInventory(): SheetInventory;
+        deleteItem<TItem extends ItemPF2e>(
+            item: TItem,
+            event?: MouseEvent
+        ): Promise<TItem | undefined>;
     }
 
     class CreatureSheetPF2e<

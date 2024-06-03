@@ -26,8 +26,8 @@ async function createManipulationMessage(
     actor: ActorPF2e,
     senderId?: string
 ) {
-    return ChatMessage.implementation.create({
-        user: senderId ?? game.user.id,
+    return getDocumentClass("ChatMessage").create({
+        author: senderId ?? game.user.id,
         speaker: {
             alias: getHighestName(actor),
         },

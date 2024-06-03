@@ -206,7 +206,7 @@ async function getSummarizedSpellsDataForRender(
 
         const consumable =
             entry.category === "items"
-                ? actor.items.get<ConsumablePF2e<CharacterPF2e>>(entryId.split("-")[0])
+                ? (actor.items.get(entryId.split("-")[0]) as ConsumablePF2e)
                 : undefined;
 
         for (const group of entry.groups) {
@@ -382,7 +382,7 @@ type SummarizedSpell = {
     isPrepared: boolean | undefined;
     isSpontaneous: boolean | undefined;
     isFlexible: boolean | undefined;
-    consumable: ConsumablePF2e<CharacterPF2e> | undefined;
+    consumable: ConsumablePF2e | undefined;
     range: string;
     rank: ZeroToTen;
     uses: (ValueAndMax & { input: string; itemId: string }) | undefined;

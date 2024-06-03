@@ -167,11 +167,10 @@ declare global {
         get sheet(): ItemSheetPF2e<this>;
         get quantity(): number;
 
+        toDragData(): { type: string; itemType: string; [key: string]: unknown };
         getOriginData(): ItemOriginFlag;
         getRollOptions(prefix?: string, options?: { includeGranter: boolean }): string[];
 
-        isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T];
-        isOfType(type: "physical"): this is PhysicalItemPF2e<TParent>;
         isOfType<T extends "physical" | ItemType>(
             ...types: T[]
         ): this is T extends "physical"
@@ -179,7 +178,6 @@ declare global {
             : T extends ItemType
             ? ItemInstances<TParent>[T]
             : never;
-        isOfType(...types: string[]): boolean;
 
         static fromDropData<TDocument extends foundry.abstract.Document>(
             this: ConstructorOf<TDocument>,
